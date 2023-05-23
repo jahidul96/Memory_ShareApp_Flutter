@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:memoryapp/utils/app_colors.dart';
+import 'package:memoryapp/widgets/custome_button.dart';
 import 'package:memoryapp/widgets/text_comp.dart';
 
 Widget groupNameAndMemberCounter() => Container(
@@ -105,10 +106,73 @@ Widget groupListTile() => InkWell(
                 ],
               ),
             ),
-            Icon(
+            const Icon(
               Icons.chevron_right,
             )
           ],
         ),
       ),
     );
+
+Widget multipleAddInputComp({
+  required String hintText,
+  required Function()? onPressed,
+}) => // group member
+    Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              decoration: InputDecoration(
+                hintText: hintText,
+              ),
+            ),
+          ),
+          const SizedBox(width: 15),
+          CustomButton(
+            text: "Add",
+            textSize: 17,
+            onPressed: onPressed,
+            width: 80,
+            height: 40,
+          ),
+        ],
+      ),
+    );
+
+// Widget descComp() => Expanded(
+//       child: Container(
+//         decoration: BoxDecoration(
+//           color: Colors.grey.shade100,
+//           borderRadius: BorderRadius.circular(20),
+//         ),
+//         constraints: const BoxConstraints(
+//           minHeight: 47,
+//           minWidth: double.infinity,
+//           maxHeight: 120,
+//           maxWidth: double.infinity,
+//         ),
+//         child: Padding(
+//           padding: const EdgeInsets.symmetric(horizontal: 12),
+//           child: Row(
+//             children: [
+//               Expanded(
+//                 child: TextField(
+//                   controller: textController,
+//                   keyboardType: TextInputType.multiline,
+//                   maxLines: null,
+//                   decoration: const InputDecoration(
+//                     hintText: "Message",
+//                     hintStyle: TextStyle(
+//                       fontSize: 18,
+//                     ),
+//                     border: InputBorder.none,
+//                   ),
+//                 ),
+//               ),
+//             ],
+//           ),
+//         ),
+//       ),
+//     );

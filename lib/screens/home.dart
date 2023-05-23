@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:memoryapp/screens/group/create_group.dart';
 import 'package:memoryapp/screens/group/single_group_details.dart';
+import 'package:memoryapp/screens/post.dart';
 import 'package:memoryapp/screens/profile.dart';
 import 'package:memoryapp/utils/app_colors.dart';
 import 'package:memoryapp/widgets/custome_button.dart';
@@ -95,11 +96,16 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: const EdgeInsets.all(8.0),
               child: CustomButton(
                 text: "Add Memory",
-                onPressed: () {},
+                height: 60,
+                onPressed: () {
+                  Navigator.pushNamed(context, PostScreen.routeName);
+                },
               ),
             )
           ],
         ),
+
+        // drawer section content
         drawer: Drawer(
           child: ListView(
             padding: EdgeInsets.zero,

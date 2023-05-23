@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:memoryapp/utils/app_colors.dart';
 import 'package:memoryapp/widgets/custome_button.dart';
 import 'package:memoryapp/widgets/simple_reuseable_widgets.dart';
-import 'package:memoryapp/widgets/text_comp.dart';
 
 class SingleGroupDeatail extends StatefulWidget {
   static const routeName = "SingleGroupDeatail";

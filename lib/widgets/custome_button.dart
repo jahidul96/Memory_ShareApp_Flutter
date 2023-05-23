@@ -6,10 +6,16 @@ class CustomButton extends StatelessWidget {
   Function()? onPressed;
   String text;
   double borderRadius;
+  double width;
+  double height;
+  double textSize;
   CustomButton(
       {super.key,
       required this.text,
       required this.onPressed,
+      this.width = double.infinity,
+      this.textSize = 20,
+      this.height = 55,
       this.borderRadius = 10});
 
   @override
@@ -20,12 +26,12 @@ class CustomButton extends StatelessWidget {
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.black,
-          minimumSize: const Size(double.infinity, 55),
+          minimumSize: Size(width, height),
         ),
         child: TextComp(
           text: text,
           color: AppColors.whiteColor,
-          size: 20,
+          size: textSize,
         ),
       ),
     );
