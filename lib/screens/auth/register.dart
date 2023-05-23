@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:memoryapp/screens/auth/login.dart';
+import 'package:memoryapp/screens/home.dart';
 import 'package:memoryapp/utils/app_colors.dart';
 import 'package:memoryapp/widgets/custome_button.dart';
 import 'package:memoryapp/widgets/text_comp.dart';
@@ -56,7 +55,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
             const SizedBox(height: 25),
             CustomButton(
               text: "SIGN UP",
-              onPressed: () {},
+              onPressed: () {
+                Navigator.pushNamed(context, HomeScreen.routeName);
+              },
             ),
             const SizedBox(height: 15),
             Row(

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:memoryapp/screens/auth/register.dart';
+import 'package:memoryapp/screens/home.dart';
 import 'package:memoryapp/utils/app_colors.dart';
 import 'package:memoryapp/widgets/custome_button.dart';
 import 'package:memoryapp/widgets/text_comp.dart';
@@ -49,7 +48,13 @@ class _LoginScreenState extends State<LoginScreen> {
             const SizedBox(height: 25),
             CustomButton(
               text: "LOGIN",
-              onPressed: () {},
+              onPressed: () {
+                Navigator.pushNamed(context, HomeScreen.routeName);
+              },
+            ),
+            const SizedBox(height: 15),
+            Center(
+              child: TextComp(text: "Forgot Password ?"),
             ),
             const SizedBox(height: 15),
             Row(
