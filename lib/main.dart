@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:memoryapp/screens/auth/register.dart';
 import 'package:memoryapp/screens/auth/login.dart';
+import 'package:memoryapp/screens/group/create_group.dart';
+import 'package:memoryapp/screens/group/single_group_details.dart';
 import 'package:memoryapp/screens/home.dart';
+import 'package:memoryapp/screens/profile.dart';
 
 void main() {
   runApp(const MyApp());
@@ -21,6 +24,9 @@ class MyApp extends StatelessWidget {
         HomeScreen.routeName: (context) => const HomeScreen(),
         RegisterScreen.routeName: (context) => const RegisterScreen(),
         LoginScreen.routeName: (context) => const LoginScreen(),
+        ProfileScreen.routeName: (context) => const ProfileScreen(),
+        SingleGroupDeatail.routeName: (context) => const SingleGroupDeatail(),
+        CreateGroupScreen.routeName: (context) => const CreateGroupScreen(),
       },
       home: const RegisterScreen(),
     );

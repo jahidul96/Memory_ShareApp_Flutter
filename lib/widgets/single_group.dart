@@ -11,6 +11,7 @@ class SingleGroup extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10),
       margin: const EdgeInsets.symmetric(vertical: 15),
       child: Row(
+        // crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // group image
           Container(
@@ -31,15 +32,30 @@ class SingleGroup extends StatelessWidget {
 
 // group right content
 
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              TextComp(text: "Group Name"),
-              const SizedBox(height: 5),
-              TextComp(text: "Creator Name"),
-              const SizedBox(height: 5),
-              TextComp(text: "#tags"),
-            ],
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                TextComp(text: "Group Name"),
+                const SizedBox(height: 5),
+                TextComp(text: "Creator Name"),
+                const SizedBox(height: 5),
+                TextComp(text: "#tags"),
+                // Container(
+                //   width: double.infinity,
+                //   height: 60,
+                //   // color: Colors.red,
+                //   child: GridView.builder(
+                //     itemCount: 3,
+                //     gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                //         maxCrossAxisExtent: 80, mainAxisExtent: 30),
+                //     itemBuilder: (context, index) {
+                //       return TextComp(text: "#tags");
+                //     },
+                //   ),
+                // )
+              ],
+            ),
           )
         ],
       ),
