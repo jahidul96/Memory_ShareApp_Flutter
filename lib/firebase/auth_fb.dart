@@ -33,7 +33,7 @@ void registerUser(
         .set(userData)
         .then(
       (value) {
-        Navigator.pushNamed(context, HomeScreen.routeName);
+        Navigator.pushNamed(context, AuthCheckScreen.routeName);
       },
     );
   } on FirebaseAuthException catch (e) {
@@ -52,7 +52,7 @@ void loginUser(String email, String password, BuildContext context) async {
           email: email,
           password: password,
         )
-        .then((_) => {Navigator.pushNamed(context, HomeScreen.routeName)});
+        .then((_) => {Navigator.pushNamed(context, AuthCheckScreen.routeName)});
   } on FirebaseAuthException catch (e) {
     if (e.code == 'user-not-found') {
       alertUser(context: context, alertText: "user-not-found");

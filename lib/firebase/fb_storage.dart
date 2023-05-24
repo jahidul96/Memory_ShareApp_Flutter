@@ -26,7 +26,8 @@ Future uploadFile({
 
 Future pickImage() async {
   try {
-    final img = await ImagePicker().pickImage(source: ImageSource.gallery);
+    final img = await ImagePicker()
+        .pickImage(source: ImageSource.gallery, imageQuality: 50);
     if (img == null) return;
     final tempImg = File(img.path);
 

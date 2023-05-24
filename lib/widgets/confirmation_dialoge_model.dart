@@ -49,13 +49,13 @@ Future confirmModel({
                 Navigator.pop(context);
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.appbarColor,
+                backgroundColor: AppColors.buttonColor,
               ),
               child: const Text("Cancel")),
           ElevatedButton(
               onPressed: confirmFunc,
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.buttonColor,
+                backgroundColor: AppColors.appbarColor,
               ),
               child: const Text("Ok")),
         ],

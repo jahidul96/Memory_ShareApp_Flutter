@@ -89,8 +89,8 @@ class _AddPicState extends State<AddPic> {
                       borderRadius: BorderRadius.circular(100),
                       child: Image.file(
                         _image!,
-                        width: 110,
-                        height: 110,
+                        width: 120,
+                        height: 120,
                         fit: BoxFit.cover,
                       ),
                     )
