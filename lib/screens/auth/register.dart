@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:memoryapp/screens/auth/add_pic.dart';
 import 'package:memoryapp/screens/auth/login.dart';
-import 'package:memoryapp/screens/home.dart';
 import 'package:memoryapp/utils/app_colors.dart';
+import 'package:memoryapp/widgets/confirmation_dialoge_model.dart';
 import 'package:memoryapp/widgets/custome_button.dart';
 import 'package:memoryapp/widgets/text_comp.dart';
 import 'package:memoryapp/widgets/text_input_container.dart';
@@ -18,6 +19,25 @@ class _RegisterScreenState extends State<RegisterScreen> {
   TextEditingController usernameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+
+  goToProfilePicScreen() {
+    if (usernameController.text.isEmpty ||
+        emailController.text.isEmpty ||
+        passwordController.text.isEmpty) {
+      return alertUser(context: context, alertText: "Fill all the fields");
+    }
+
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => AddPic(
+            email: emailController.text,
+            password: passwordController.text,
+            username: usernameController.text,
+          ),
+        ));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,10 +74,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
             ),
             const SizedBox(height: 25),
             CustomButton(
-              text: "SIGN UP",
-              onPressed: () {
-                Navigator.pushNamed(context, HomeScreen.routeName);
-              },
+              text: "NEXT",
+              onPressed: () => goToProfilePicScreen(),
             ),
             const SizedBox(height: 15),
             Row(

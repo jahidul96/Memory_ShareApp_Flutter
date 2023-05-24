@@ -28,7 +28,7 @@ class ContainerTextInput extends StatelessWidget {
             Icon(
               icon,
               color: AppColors.greyColor,
-              size: 20,
+              size: 22,
             ),
             const SizedBox(width: 10),
             Expanded(

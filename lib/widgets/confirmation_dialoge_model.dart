@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:memoryapp/widgets/custome_button.dart';
 
 import '../utils/app_colors.dart';
 import 'text_comp.dart';
@@ -19,10 +20,11 @@ Future alertUser({
           ElevatedButton(
             onPressed: () => Navigator.pop(context),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.buttonColor,
+              backgroundColor: AppColors.black,
             ),
             child: TextComp(
               text: "Ok",
+              color: AppColors.whiteColor,
             ),
           ),
         ],

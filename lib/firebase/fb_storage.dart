@@ -8,7 +8,6 @@ import 'package:memoryapp/widgets/confirmation_dialoge_model.dart';
 final storageRef = FirebaseStorage.instance.ref();
 
 Future uploadFile({
-  required String fileName,
   required File? image,
   required String imagePath,
   required BuildContext context,
