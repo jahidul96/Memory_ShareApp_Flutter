@@ -1,9 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:memoryapp/provider/user_provider.dart';
 import 'package:memoryapp/utils/app_colors.dart';
 import 'package:memoryapp/widgets/confirmation_dialoge_model.dart';
 import 'package:memoryapp/widgets/text_comp.dart';
 import 'package:memoryapp/screens/auth/auth_check.dart';
+import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatefulWidget {
   static const routeName = "ProfileScreen";
@@ -14,13 +16,7 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  logout() {
-    confirmModel(
-        context: context,
-        confirmFunc: () => confirmLogout(),
-        infoText: "You Want to logout");
-  }
-
+  // confirm logout
   confirmLogout() {
     FirebaseAuth.instance.signOut();
     Navigator.pushNamed(context, AuthCheckScreen.routeName);
@@ -39,47 +35,61 @@ class _ProfileScreenState extends State<ProfileScreen> {
           size: 20,
         ),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            const SizedBox(height: 30),
-            Center(
-              child: Column(
-                children: [
-                  const Icon(
-                    Icons.person,
-                    size: 60,
+      body: Consumer<UserProvider>(
+        builder: (context, userProvider, child) {
+          final user = userProvider.user;
+          return SingleChildScrollView(
+            child: Column(
+              children: [
+                const SizedBox(height: 30),
+                Center(
+                  child: Column(
+                    children: [
+                      user.profilePic != ""
+                          ? ClipRRect(
+                              borderRadius: BorderRadius.circular(100),
+                              child: Image.network(
+                                user.profilePic,
+                                width: 90,
+                                height: 90,
+                                fit: BoxFit.cover,
+                              ))
+                          : const Icon(
+                              Icons.person,
+                              size: 60,
+                            ),
+                      const SizedBox(height: 5),
+                      TextComp(
+                        text: user.username,
+                        size: 22,
+                      ),
+                      const SizedBox(height: 3),
+                      TextComp(
+                        text: user.email,
+                        fontweight: FontWeight.normal,
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 5),
-                  TextComp(
-                    text: "Jahidul",
-                    size: 22,
-                  ),
-                  const SizedBox(height: 3),
-                  TextComp(
-                    text: "Jahidul@gmail.com",
-                    fontweight: FontWeight.normal,
-                  ),
-                ],
-              ),
+                ),
+                const SizedBox(height: 40),
+                const Divider(height: 5),
+                optionComp(
+                  text: "Update profile picture",
+                  onTap: () {},
+                ),
+                optionComp(text: "Groups", onTap: () {}),
+                optionComp(text: "Password & security", onTap: () {}),
+                optionComp(text: "Delete my account", onTap: () {}),
+                optionComp(
+                    text: "Log out",
+                    onTap: () => confirmModel(
+                        context: context,
+                        confirmFunc: () => confirmLogout(),
+                        infoText: "Sure you want to logout ?")),
+              ],
             ),
-            const SizedBox(height: 40),
-            const Divider(height: 5),
-            optionComp(
-              text: "Update profile picture",
-              onTap: () {},
-            ),
-            optionComp(text: "Groups", onTap: () {}),
-            optionComp(text: "Password & security", onTap: () {}),
-            optionComp(text: "Delete my account", onTap: () {}),
-            optionComp(
-                text: "Log out",
-                onTap: () => confirmModel(
-                    context: context,
-                    confirmFunc: () => confirmLogout(),
-                    infoText: "Sure you want to logout ?")),
-          ],
-        ),
+          );
+        },
       ),
     );
   }

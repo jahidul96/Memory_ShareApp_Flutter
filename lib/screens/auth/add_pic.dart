@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, must_be_immutable
 
 import 'dart:io';
 
@@ -142,11 +142,6 @@ class _AddPicState extends State<AddPic> {
                     onPressed: () => createAccount(),
                   ),
                 ),
-          // Padding(
-          //   padding: const EdgeInsets.symmetric(horizontal: 15),
-          //   child:
-          //       CustomButton(text: "SIGN UP", onPressed: () => createAccount()),
-          // ),
         ],
       ),
     );

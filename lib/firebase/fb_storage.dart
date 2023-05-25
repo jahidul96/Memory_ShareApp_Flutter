@@ -20,7 +20,7 @@ Future uploadFile({
     return url;
   } catch (e) {
     alertUser(context: context, alertText: "Image Upload problem");
-    print("file uploaded problem");
+    // print("file uploaded problem");
   }
 }
 
@@ -33,6 +33,6 @@ Future pickImage() async {
 
     return tempImg;
   } catch (e) {
-    print("error occuer's");
+    // print("error occuer's");
   }
 }

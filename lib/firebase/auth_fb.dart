@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:memoryapp/screens/auth/auth_check.dart';
-import 'package:memoryapp/firebase/fb_instance.dart';
-import 'package:memoryapp/screens/home.dart';
 import 'package:memoryapp/widgets/confirmation_dialoge_model.dart';
 
 void registerUser(
@@ -52,26 +50,14 @@ void loginUser(String email, String password, BuildContext context) async {
           email: email,
           password: password,
         )
-        .then((_) => {Navigator.pushNamed(context, AuthCheckScreen.routeName)});
+        .then((_) => {
+              Navigator.pushNamed(context, AuthCheckScreen.routeName),
+            });
   } on FirebaseAuthException catch (e) {
     if (e.code == 'user-not-found') {
       alertUser(context: context, alertText: "user-not-found");
     } else if (e.code == 'wrong-password') {
       alertUser(context: context, alertText: "wrong credentials");
     }
-  }
-}
-
-// get myData
-Future getMyData() async {
-  try {
-    var data = await db
-        .collection("users")
-        .doc(FirebaseAuth.instance.currentUser!.uid)
-        .get();
-
-    return data.data();
-  } catch (e) {
-    print("some error");
   }
 }
