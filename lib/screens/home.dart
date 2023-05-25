@@ -1,6 +1,3 @@
-import 'dart:convert';
-
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:memoryapp/models/user_model.dart';
 import 'package:memoryapp/provider/user_provider.dart';
@@ -9,6 +6,7 @@ import 'package:memoryapp/screens/group/single_group_details.dart';
 import 'package:memoryapp/screens/post.dart';
 import 'package:memoryapp/screens/profile.dart';
 import 'package:memoryapp/utils/app_colors.dart';
+import 'package:memoryapp/widgets/confirmation_dialoge_model.dart';
 import 'package:memoryapp/widgets/custome_button.dart';
 import 'package:memoryapp/widgets/simple_reuseable_widgets.dart';
 import 'package:memoryapp/widgets/text_comp.dart';
@@ -26,10 +24,10 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  late UserModel userData;
+  UserModel userData =
+      UserModel(profilePic: "", id: "", email: "", username: "");
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     getUserData();
   }
@@ -43,7 +41,10 @@ class _HomeScreenState extends State<HomeScreen> {
         userData = UserModel.fromMap(data);
       });
     } catch (e) {
-      print("error is occured");
+      // print("error is occured");
+      alertUser(
+          context: context,
+          alertText: "some error when fetching user infomation");
     }
   }
 
@@ -176,18 +177,22 @@ class _HomeScreenState extends State<HomeScreen> {
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               TextComp(
-                                text: userData.username.length > 12
-                                    ? "${userData.username.substring(0, 12).toUpperCase()}..."
-                                    : userData.username.toUpperCase(),
+                                text: userData.username == ""
+                                    ? "Username"
+                                    : userData.username.length > 12
+                                        ? "${userData.username.substring(0, 12).toUpperCase()}..."
+                                        : userData.username.toUpperCase(),
                                 color: Colors.white,
                                 fontweight: FontWeight.bold,
                                 size: 18,
                               ),
                               const SizedBox(height: 3),
                               TextComp(
-                                text: userData.email.length > 20
-                                    ? "${userData.email.substring(0, 19)}..."
-                                    : userData.email,
+                                text: userData.email == ""
+                                    ? "user@email.com"
+                                    : userData.email.length > 20
+                                        ? "${userData.email.substring(0, 19)}..."
+                                        : userData.email,
                                 color: Colors.white,
                                 fontweight: FontWeight.normal,
                                 size: 15,
