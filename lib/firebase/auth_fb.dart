@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:memoryapp/models/user_model.dart';
 import 'package:memoryapp/screens/auth/auth_check.dart';
 import 'package:memoryapp/widgets/confirmation_dialoge_model.dart';
 
@@ -59,5 +60,19 @@ void loginUser(String email, String password, BuildContext context) async {
     } else if (e.code == 'wrong-password') {
       alertUser(context: context, alertText: "wrong credentials");
     }
+  }
+}
+
+updateUserInfoFb({
+  required data,
+  required BuildContext context,
+}) async {
+  try {
+    FirebaseFirestore.instance
+        .collection("users")
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .set(data);
+  } catch (e) {
+    alertUser(context: context, alertText: "Data update problem");
   }
 }

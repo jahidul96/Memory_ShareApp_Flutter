@@ -1,6 +1,9 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:memoryapp/provider/user_provider.dart';
+import 'package:memoryapp/screens/profile/edit_profile_info.dart';
 import 'package:memoryapp/utils/app_colors.dart';
 import 'package:memoryapp/widgets/confirmation_dialoge_model.dart';
 import 'package:memoryapp/widgets/text_comp.dart';
@@ -53,29 +56,40 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 width: 90,
                                 height: 90,
                                 fit: BoxFit.cover,
-                              ))
+                              ),
+                            )
                           : const Icon(
                               Icons.person,
                               size: 60,
                             ),
                       const SizedBox(height: 5),
                       TextComp(
-                        text: user.username,
+                        text: user.username.toUpperCase(),
                         size: 22,
                       ),
                       const SizedBox(height: 3),
                       TextComp(
                         text: user.email,
                         fontweight: FontWeight.normal,
+                        size: 18,
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 40),
-                const Divider(height: 5),
+                const SizedBox(height: 30),
+                const Divider(height: 3),
                 optionComp(
-                  text: "Update profile picture",
-                  onTap: () {},
+                  text: "Edit profile",
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => EditProfileInfo(
+                            profilePic: user.profilePic,
+                            username: user.username),
+                      ),
+                    );
+                  },
                 ),
                 optionComp(text: "Groups", onTap: () {}),
                 optionComp(text: "Password & security", onTap: () {}),
@@ -94,6 +108,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+// optioncomp widget
   Widget optionComp({
     required String text,
     required Function()? onTap,

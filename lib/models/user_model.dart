@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 class UserModel {
   String profilePic;
   String id;
@@ -28,7 +30,7 @@ class UserModel {
     );
   }
 
-  // String toJson() => json.encode(toMap());
+  String toJson() => json.encode(toMap());
 
   // factory User.fromJson(String source) => User.fromMap(json.decode(source));
 }

@@ -63,3 +63,33 @@ Future confirmModel({
     },
   );
 }
+
+Future callBackAlert({
+  required BuildContext context,
+  required String alertText,
+  required Function()? onPressed,
+}) {
+  return showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: TextComp(
+          text: alertText,
+          color: AppColors.black,
+        ),
+        actions: [
+          ElevatedButton(
+            onPressed: onPressed,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.black,
+            ),
+            child: TextComp(
+              text: "Ok",
+              color: AppColors.whiteColor,
+            ),
+          ),
+        ],
+      );
+    },
+  );
+}

@@ -4,7 +4,7 @@ import 'package:memoryapp/provider/user_provider.dart';
 import 'package:memoryapp/screens/group/create_group.dart';
 import 'package:memoryapp/screens/group/single_group_details.dart';
 import 'package:memoryapp/screens/post.dart';
-import 'package:memoryapp/screens/profile.dart';
+import 'package:memoryapp/screens/profile/profile.dart';
 import 'package:memoryapp/utils/app_colors.dart';
 import 'package:memoryapp/widgets/confirmation_dialoge_model.dart';
 import 'package:memoryapp/widgets/custome_button.dart';
@@ -26,6 +26,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   UserModel userData =
       UserModel(profilePic: "", id: "", email: "", username: "");
+
   @override
   void initState() {
     super.initState();
@@ -34,6 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   getUserData() async {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
+
     try {
       var data = await getMyData();
       userProvider.setUser(UserModel.fromMap(data));
@@ -139,74 +141,80 @@ class _HomeScreenState extends State<HomeScreen> {
           child: ListView(
             padding: EdgeInsets.zero,
             children: [
+              // user profile section
               DrawerHeader(
                 decoration: BoxDecoration(
                   color: AppColors.appbarColor,
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 6),
-                  child: InkWell(
-                    onTap: () {
-                      Navigator.popAndPushNamed(
-                          context, ProfileScreen.routeName);
-                    },
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        // user image
-                        userData.profilePic != ""
-                            ? ClipRRect(
-                                borderRadius: BorderRadius.circular(100),
-                                child: Image.network(
-                                  userData.profilePic,
-                                  width: 46,
-                                  height: 46,
-                                  fit: BoxFit.cover,
-                                ))
-                            : const Icon(
-                                Icons.person,
-                                size: 40,
-                                color: AppColors.whiteColor,
-                              ),
-                        const SizedBox(width: 10),
+                child: Consumer<UserProvider>(
+                  builder: (context, userProvider, child) {
+                    final user = userProvider.user;
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 6),
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.popAndPushNamed(
+                              context, ProfileScreen.routeName);
+                        },
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            // user image
+                            user.profilePic != ""
+                                ? ClipRRect(
+                                    borderRadius: BorderRadius.circular(100),
+                                    child: Image.network(
+                                      user.profilePic,
+                                      width: 46,
+                                      height: 46,
+                                      fit: BoxFit.cover,
+                                    ))
+                                : const Icon(
+                                    Icons.person,
+                                    size: 40,
+                                    color: AppColors.whiteColor,
+                                  ),
+                            const SizedBox(width: 10),
 
-                        // user name and email
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              TextComp(
-                                text: userData.username == ""
-                                    ? "Username"
-                                    : userData.username.length > 12
-                                        ? "${userData.username.substring(0, 12).toUpperCase()}..."
-                                        : userData.username.toUpperCase(),
-                                color: Colors.white,
-                                fontweight: FontWeight.bold,
-                                size: 18,
+                            // user name and email
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  TextComp(
+                                    text: user.username == ""
+                                        ? "Username"
+                                        : user.username.length > 12
+                                            ? "${user.username.substring(0, 12).toUpperCase()}..."
+                                            : user.username.toUpperCase(),
+                                    color: Colors.white,
+                                    fontweight: FontWeight.bold,
+                                    size: 18,
+                                  ),
+                                  const SizedBox(height: 3),
+                                  TextComp(
+                                    text: user.email == ""
+                                        ? "user@email.com"
+                                        : user.email.length > 20
+                                            ? "${user.email.substring(0, 19)}..."
+                                            : user.email,
+                                    color: Colors.white,
+                                    fontweight: FontWeight.normal,
+                                    size: 15,
+                                  ),
+                                ],
                               ),
-                              const SizedBox(height: 3),
-                              TextComp(
-                                text: userData.email == ""
-                                    ? "user@email.com"
-                                    : userData.email.length > 20
-                                        ? "${userData.email.substring(0, 19)}..."
-                                        : userData.email,
-                                color: Colors.white,
-                                fontweight: FontWeight.normal,
-                                size: 15,
-                              ),
-                            ],
-                          ),
+                            ),
+                            const Icon(
+                              Icons.settings,
+                              color: AppColors.whiteColor,
+                            )
+                          ],
                         ),
-                        const Icon(
-                          Icons.settings,
-                          color: AppColors.whiteColor,
-                        )
-                      ],
-                    ),
-                  ),
+                      ),
+                    );
+                  },
                 ),
               ),
               Column(
