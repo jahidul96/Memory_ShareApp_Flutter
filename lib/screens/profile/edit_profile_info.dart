@@ -2,6 +2,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:memoryapp/firebase/auth_fb.dart';
+import 'package:memoryapp/firebase/fb_firestore.dart';
 import 'package:memoryapp/firebase/fb_storage.dart';
 import 'package:memoryapp/models/user_model.dart';
 import 'package:memoryapp/provider/user_provider.dart';

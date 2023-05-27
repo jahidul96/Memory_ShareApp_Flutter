@@ -4,17 +4,18 @@ import 'package:flutter/material.dart';
 
 class SimpleTextInput extends StatelessWidget {
   String hintText;
+  TextEditingController controller;
 
-  SimpleTextInput({super.key, required this.hintText});
+  SimpleTextInput(
+      {super.key, required this.hintText, required this.controller});
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: TextField(
-        decoration: InputDecoration(
-          hintText: hintText,
-          hintStyle: const TextStyle(fontFamily: "Poppins"),
-        ),
+    return TextField(
+      controller: controller,
+      decoration: InputDecoration(
+        hintText: hintText,
+        hintStyle: const TextStyle(fontFamily: "Poppins"),
       ),
     );
   }

@@ -120,13 +120,17 @@ Widget groupListTile() => InkWell(
 Widget multipleAddInputComp({
   required String hintText,
   required Function()? onPressed,
+  required TextEditingController controller,
 }) => // group member
     Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
       child: Row(
         children: [
-          SimpleTextInput(
-            hintText: hintText,
+          Expanded(
+            child: SimpleTextInput(
+              controller: controller,
+              hintText: hintText,
+            ),
           ),
           const SizedBox(width: 15),
           CustomButton(

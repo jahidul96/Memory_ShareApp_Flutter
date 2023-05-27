@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously, must_be_immutable
+// ignore_for_file: use_build_context_synchronously, must_be_immutable, depend_on_referenced_packages
 
 import 'dart:io';
 
@@ -6,10 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:memoryapp/firebase/auth_fb.dart';
 import 'package:memoryapp/firebase/fb_storage.dart';
 import 'package:memoryapp/widgets/confirmation_dialoge_model.dart';
+import 'package:memoryapp/widgets/simple_reuseable_widgets.dart';
 import 'package:path/path.dart' as p;
 import 'package:memoryapp/utils/app_colors.dart';
 import 'package:memoryapp/widgets/text_comp.dart';
-import 'package:memoryapp/widgets/custome_button.dart';
 
 class AddPic extends StatefulWidget {
   String email;
@@ -78,71 +78,77 @@ class _AddPicState extends State<AddPic> {
           size: 19,
         ),
       ),
-      body: Column(
-        children: [
-          const SizedBox(height: 30),
-          InkWell(
-            onTap: () => getImage(),
-            child: Center(
-              child: _image != null
-                  ? ClipRRect(
-                      borderRadius: BorderRadius.circular(100),
-                      child: Image.file(
-                        _image!,
-                        width: 120,
-                        height: 120,
-                        fit: BoxFit.cover,
-                      ),
-                    )
-                  : Column(
-                      children: [
-                        Container(
-                          width: 110,
-                          height: 110,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(100),
-                            color: AppColors.appbarColor,
-                          ),
-                          child: const Center(
-                            child: Icon(
-                              Icons.camera_alt,
-                              size: 30,
-                              color: AppColors.whiteColor,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        TextComp(text: "Add a profile picture.")
-                      ],
-                    ),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 15),
+        child: Column(
+          children: [
+            const SizedBox(height: 30),
+            imagePickerPlaceholderComp(onTap: getImage, image: _image),
+            // InkWell(
+            //   onTap: () => getImage(),
+            //   child: Center(
+            //     child: _image != null
+            //         ? ClipRRect(
+            //             borderRadius: BorderRadius.circular(100),
+            //             child: Image.file(
+            //               _image!,
+            //               width: 120,
+            //               height: 120,
+            //               fit: BoxFit.cover,
+            //             ),
+            //           )
+            //         : Column(
+            //             children: [
+            //               Container(
+            //                 width: 110,
+            //                 height: 110,
+            //                 decoration: BoxDecoration(
+            //                   borderRadius: BorderRadius.circular(100),
+            //                   color: AppColors.appbarColor,
+            //                 ),
+            //                 child: const Center(
+            //                   child: Icon(
+            //                     Icons.camera_alt,
+            //                     size: 30,
+            //                     color: AppColors.whiteColor,
+            //                   ),
+            //                 ),
+            //               ),
+            //               const SizedBox(height: 8),
+            //               TextComp(text: "Add a profile picture.")
+            //             ],
+            //           ),
+            //   ),
+            // ),
+            const SizedBox(height: 30),
+            // lodder component
+            sendinglodingComp(
+              loading: loading,
+              loadderText: "Creating Account Wait...",
+              btnText: "Create Account",
+              onPressed: () => createAccount(),
             ),
-          ),
-          const SizedBox(height: 30),
-          loading
-              ? Center(
-                  child: Column(
-                    children: [
-                      const SizedBox(
-                        height: 40,
-                      ),
-                      const CircularProgressIndicator(),
-                      const SizedBox(
-                        height: 40,
-                      ),
-                      TextComp(text: "Creating Account Wait...")
-                    ],
-                  ),
-                )
-              : Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 15,
-                  ),
-                  child: CustomButton(
-                    text: "Create Account",
-                    onPressed: () => createAccount(),
-                  ),
-                ),
-        ],
+            // loading
+            //     ? Center(
+            //         child: Column(
+            //           children: [
+            //             const SizedBox(
+            //               height: 40,
+            //             ),
+            //             const CircularProgressIndicator(),
+            //             const SizedBox(
+            //               height: 40,
+            //             ),
+            //             TextComp(text: "Creating Account Wait...")
+            //           ],
+            //         ),
+            //       )
+            //     : CustomButton(
+            //         text: "Create Account",
+            //         onPressed: () => createAccount(),
+            //       ),
+          ],
+        ),
       ),
     );
   }

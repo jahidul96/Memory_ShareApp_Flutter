@@ -13,6 +13,7 @@ class PostScreen extends StatefulWidget {
 }
 
 class _PostScreenState extends State<PostScreen> {
+  TextEditingController tagsController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -87,6 +88,7 @@ class _PostScreenState extends State<PostScreen> {
 
             // add tags
             multipleAddInputComp(
+              controller: tagsController,
               hintText: "#tags",
               onPressed: () {},
             ),
