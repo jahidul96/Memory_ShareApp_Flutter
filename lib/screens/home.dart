@@ -150,7 +150,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   builder: (context, userProvider, child) {
                     final user = userProvider.user;
                     return Padding(
-                      padding: const EdgeInsets.only(bottom: 6),
+                      padding: const EdgeInsets.only(bottom: 4),
                       child: InkWell(
                         onTap: () {
                           Navigator.popAndPushNamed(
@@ -165,8 +165,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                     borderRadius: BorderRadius.circular(100),
                                     child: Image.network(
                                       user.profilePic,
-                                      width: 46,
-                                      height: 46,
+                                      width: 45,
+                                      height: 45,
                                       fit: BoxFit.cover,
                                     ))
                                 : const Icon(
@@ -190,9 +190,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                             : user.username.toUpperCase(),
                                     color: Colors.white,
                                     fontweight: FontWeight.bold,
-                                    size: 18,
+                                    size: 15,
                                   ),
-                                  const SizedBox(height: 3),
                                   TextComp(
                                     text: user.email == ""
                                         ? "user@email.com"
@@ -201,7 +200,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             : user.email,
                                     color: Colors.white,
                                     fontweight: FontWeight.normal,
-                                    size: 15,
+                                    size: 13,
                                   ),
                                 ],
                               ),

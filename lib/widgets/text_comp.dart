@@ -20,10 +20,10 @@ class TextComp extends StatelessWidget {
     return Text(
       text,
       style: TextStyle(
-        color: color,
-        fontSize: size,
-        fontWeight: fontweight,
-      ),
+          color: color,
+          fontSize: size,
+          fontWeight: fontweight,
+          fontFamily: "Poppins"),
       textAlign: align,
     );
   }

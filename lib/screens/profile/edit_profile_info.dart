@@ -1,24 +1,21 @@
-// ignore_for_file: prefer_const_constructors_in_immutables, use_build_context_synchronously
+// ignore_for_file: prefer_const_constructors_in_immutables, use_build_context_synchronously, depend_on_referenced_packages, must_be_immutable
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:memoryapp/firebase/auth_fb.dart';
 import 'package:memoryapp/firebase/fb_storage.dart';
 import 'package:memoryapp/models/user_model.dart';
 import 'package:memoryapp/provider/user_provider.dart';
-import 'package:memoryapp/screens/home.dart';
-import 'package:memoryapp/screens/profile/profile.dart';
 import 'package:memoryapp/utils/app_colors.dart';
 import 'package:memoryapp/widgets/confirmation_dialoge_model.dart';
-import 'package:memoryapp/widgets/custome_button.dart';
+import 'package:memoryapp/widgets/simple_reuseable_widgets.dart';
 import 'package:memoryapp/widgets/text_comp.dart';
 import 'package:path/path.dart' as p;
 import 'package:provider/provider.dart';
 
 class EditProfileInfo extends StatefulWidget {
-  String profilePic;
-  String username;
-  EditProfileInfo(
-      {super.key, required this.profilePic, required this.username});
+  EditProfileInfo({
+    super.key,
+  });
 
   @override
   State<EditProfileInfo> createState() => _EditProfileInfoState();
@@ -41,6 +38,7 @@ class _EditProfileInfoState extends State<EditProfileInfo> {
     }
   }
 
+// updateUserInfo function
   updateUserInfo() async {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     final user = userProvider.user;
@@ -81,13 +79,9 @@ class _EditProfileInfoState extends State<EditProfileInfo> {
         _image = null;
         usernameController.clear();
       });
-      return callBackAlert(
+      return alertUser(
         context: context,
         alertText: "Update Succesfull",
-        onPressed: () {
-          Navigator.pop(context);
-          Navigator.pushNamed(context, HomeScreen.routeName);
-        },
       );
     } catch (e) {
       return alertUser(
@@ -98,98 +92,86 @@ class _EditProfileInfoState extends State<EditProfileInfo> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: AppColors.appbarColor,
-        elevation: 0,
-        automaticallyImplyLeading: false,
-        leading: IconButton(
-            onPressed: () {
-              setState(() {
-                _image = null;
-                loading = false;
-              });
-              Navigator.pop(context);
-            },
-            icon: const Icon(
-              Icons.chevron_left,
-              size: 30,
-              color: AppColors.whiteColor,
-            )),
-        title: TextComp(
-          text: "Edit Info",
-          color: AppColors.whiteColor,
-          size: 20,
+        appBar: AppBar(
+          backgroundColor: AppColors.appbarColor,
+          elevation: 0,
+          automaticallyImplyLeading: true,
+          title: TextComp(
+            text: "Edit Info",
+            color: AppColors.whiteColor,
+            size: 20,
+          ),
         ),
-      ),
-      body: Container(
-        height: MediaQuery.of(context).size.height,
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 40),
-            InkWell(
-              onTap: getImage,
-              child: Center(
-                child: Column(
-                  children: [
-                    _image != null
-                        ? ClipRRect(
-                            borderRadius: BorderRadius.circular(100),
-                            child: Image.file(
-                              _image!,
-                              width: 90,
-                              height: 90,
-                              fit: BoxFit.cover,
-                            ),
-                          )
-                        : ClipRRect(
-                            borderRadius: BorderRadius.circular(100),
-                            child: Image.network(
-                              widget.profilePic,
-                              width: 90,
-                              height: 90,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                    const SizedBox(height: 8),
-                    _image != null
-                        ? TextComp(text: "You have added new one!")
-                        : TextComp(text: "Click on photo to choose new one"),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-            TextField(
-              controller: usernameController,
-              decoration: const InputDecoration(
-                  hintText: "your new user name",
-                  hintStyle: TextStyle(fontSize: 20)),
-            ),
-            const SizedBox(height: 30),
-            loading
-                ? Center(
-                    child: Column(
-                      children: [
-                        const SizedBox(
-                          height: 40,
-                        ),
-                        const CircularProgressIndicator(),
-                        const SizedBox(
-                          height: 40,
-                        ),
-                        TextComp(text: "Updating user info wait...")
-                      ],
-                    ),
-                  )
-                : CustomButton(
-                    text: "Update",
+        body: Consumer<UserProvider>(
+          builder: (context, userProviderValue, child) {
+            var user = userProviderValue.user;
+            return Container(
+              height: MediaQuery.of(context).size.height,
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 40),
+
+                  // get image
+                  editImageComp(profilePic: user.profilePic),
+
+                  const SizedBox(height: 20),
+                  TextField(
+                    controller: usernameController,
+                    decoration: const InputDecoration(
+                        hintText: "your new user name",
+                        hintStyle: TextStyle(fontSize: 20)),
+                  ),
+                  const SizedBox(height: 30),
+
+                  // lodder component
+                  sendinglodingComp(
+                    loading: loading,
+                    loadderText: "Updating info wait",
+                    btnText: "update",
                     onPressed: () => updateUserInfo(),
                   )
-          ],
-        ),
-      ),
-    );
+                ],
+              ),
+            );
+          },
+        ));
   }
+
+  Widget editImageComp({
+    required String profilePic,
+  }) =>
+      InkWell(
+        onTap: getImage,
+        child: Center(
+          child: Column(
+            children: [
+              _image != null
+                  ? ClipRRect(
+                      borderRadius: BorderRadius.circular(100),
+                      child: Image.file(
+                        _image!,
+                        width: 90,
+                        height: 90,
+                        fit: BoxFit.cover,
+                      ),
+                    )
+                  : ClipRRect(
+                      borderRadius: BorderRadius.circular(100),
+                      child: Image.network(
+                        profilePic,
+                        width: 90,
+                        height: 90,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+              const SizedBox(height: 8),
+              _image != null
+                  ? TextComp(text: "You have added new one!")
+                  : TextComp(text: "Click on photo to choose new one"),
+            ],
+          ),
+        ),
+      );
 }

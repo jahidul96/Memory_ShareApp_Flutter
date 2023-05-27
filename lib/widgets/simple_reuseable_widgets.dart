@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:memoryapp/utils/app_colors.dart';
 import 'package:memoryapp/widgets/custome_button.dart';
 import 'package:memoryapp/widgets/text_comp.dart';
+import 'package:memoryapp/widgets/simple_text_input.dart';
 
 Widget groupNameAndMemberCounter() => Container(
       padding: const EdgeInsets.symmetric(vertical: 20),
@@ -122,12 +125,8 @@ Widget multipleAddInputComp({
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
       child: Row(
         children: [
-          Expanded(
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: hintText,
-              ),
-            ),
+          SimpleTextInput(
+            hintText: hintText,
           ),
           const SizedBox(width: 15),
           CustomButton(
@@ -141,38 +140,61 @@ Widget multipleAddInputComp({
       ),
     );
 
-// Widget descComp() => Expanded(
-//       child: Container(
-//         decoration: BoxDecoration(
-//           color: Colors.grey.shade100,
-//           borderRadius: BorderRadius.circular(20),
-//         ),
-//         constraints: const BoxConstraints(
-//           minHeight: 47,
-//           minWidth: double.infinity,
-//           maxHeight: 120,
-//           maxWidth: double.infinity,
-//         ),
-//         child: Padding(
-//           padding: const EdgeInsets.symmetric(horizontal: 12),
-//           child: Row(
-//             children: [
-//               Expanded(
-//                 child: TextField(
-//                   controller: textController,
-//                   keyboardType: TextInputType.multiline,
-//                   maxLines: null,
-//                   decoration: const InputDecoration(
-//                     hintText: "Message",
-//                     hintStyle: TextStyle(
-//                       fontSize: 18,
-//                     ),
-//                     border: InputBorder.none,
-//                   ),
-//                 ),
-//               ),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
+Widget imagePickerPlaceholderComp({
+  required Function()? onTap,
+  required File? image,
+}) =>
+    InkWell(
+      onTap: onTap,
+      child: Center(
+        child: image != null
+            ? ClipRRect(
+                borderRadius: BorderRadius.circular(100),
+                child: Image.file(
+                  image,
+                  width: 90,
+                  height: 90,
+                  fit: BoxFit.cover,
+                ),
+              )
+            : Container(
+                width: 90,
+                height: 90,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(45),
+                  color: AppColors.appbarColor,
+                ),
+                child: const Icon(
+                  Icons.camera_alt,
+                  color: AppColors.whiteColor,
+                  size: 30,
+                ),
+              ),
+      ),
+    );
+
+Widget sendinglodingComp({
+  required bool loading,
+  required Function()? onPressed,
+  required String loadderText,
+  required String btnText,
+}) =>
+    loading
+        ? Center(
+            child: Column(
+              children: [
+                const SizedBox(
+                  height: 40,
+                ),
+                const CircularProgressIndicator(),
+                const SizedBox(
+                  height: 40,
+                ),
+                TextComp(text: loadderText)
+              ],
+            ),
+          )
+        : CustomButton(
+            text: btnText,
+            onPressed: onPressed,
+          );

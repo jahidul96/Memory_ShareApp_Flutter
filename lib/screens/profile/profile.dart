@@ -62,16 +62,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               Icons.person,
                               size: 60,
                             ),
-                      const SizedBox(height: 5),
+                      const SizedBox(height: 7),
                       TextComp(
                         text: user.username.toUpperCase(),
-                        size: 22,
+                        size: 18,
                       ),
                       const SizedBox(height: 3),
                       TextComp(
                         text: user.email,
                         fontweight: FontWeight.normal,
-                        size: 18,
+                        size: 16,
                       ),
                     ],
                   ),
@@ -84,9 +84,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => EditProfileInfo(
-                            profilePic: user.profilePic,
-                            username: user.username),
+                        builder: (context) => EditProfileInfo(),
                       ),
                     );
                   },
