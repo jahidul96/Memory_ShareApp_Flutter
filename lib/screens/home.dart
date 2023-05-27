@@ -18,6 +18,7 @@ import 'package:memoryapp/firebase/fb_firestore.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:memoryapp/widgets/tab_comp/timeline_tab_comp.dart';
 
 class HomeScreen extends StatefulWidget {
   static const routeName = "HomeScreen";
@@ -45,6 +46,16 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       var data = await getMyData();
       userProvider.setUser(UserModel.fromMap(data));
+
+      var snapshots = await FirebaseFirestore.instance
+          .collection("groups")
+          .where("groupMember", arrayContains: data["email"])
+          .get();
+
+      for (var element in snapshots.docs) {
+        groupList.add(GroupNameAndId(
+            groupId: element.id, groupName: element.data()["groupName"]));
+      }
       setState(() {
         userData = UserModel.fromMap(data);
       });
@@ -55,6 +66,10 @@ class _HomeScreenState extends State<HomeScreen> {
           alertText: "some error when fetching user infomation");
     }
   }
+
+  // getMyGroups(){
+  //   FirebaseFirestore.instance.collection("groups").where(field)
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -114,19 +129,13 @@ class _HomeScreenState extends State<HomeScreen> {
             Expanded(
               child: TabBarView(children: [
                 // timeline tab content
-                ListView.builder(
-                  itemCount: 5,
-                  itemBuilder: (context, index) {
-                    return const SinglePostComp();
-                  },
-                ),
+                const TimeLineTab(),
 
                 // groups tab content
                 StreamBuilder(
                   stream: FirebaseFirestore.instance
                       .collection("groups")
-                      .where("adminId",
-                          isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+                      .where("groupMember", arrayContains: userData.email)
                       .snapshots(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
@@ -135,19 +144,29 @@ class _HomeScreenState extends State<HomeScreen> {
                       );
                     }
 
+                    if (snapshot.data!.docs.length == 0) {
+                      return Center(
+                        child: TextComp(text: "No group till now"),
+                      );
+                    }
+
                     if (snapshot.hasData) {
                       var data = snapshot.data!.docs;
                       List<GroupModel> myGroupList = [];
                       List myGroupIds = [];
 
-                      // injecttind data and group id to list
+                      // injecting data and group id to list
                       for (var element in data) {
-                        myGroupList.add(GroupModel.fromMap(element.data()));
+                        myGroupList.add(
+                          GroupModel.fromMap(element.data()),
+                        );
                         myGroupIds.add(element.id);
 
-                        groupList.add(GroupNameAndId(
-                            groupId: element.id,
-                            groupName: element.data()["groupName"]));
+                        // groupList.add(
+                        //   GroupNameAndId(
+                        //       groupId: element.id,
+                        //       groupName: element.data()["groupName"]),
+                        // );
                       }
                       return ListView.builder(
                         itemCount: snapshot.data!.docs.length,

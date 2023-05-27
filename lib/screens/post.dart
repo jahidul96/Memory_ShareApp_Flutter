@@ -1,11 +1,21 @@
-// ignore_for_file: must_be_immutable
+// ignore_for_file: must_be_immutable, use_build_context_synchronously
+
+import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:memoryapp/firebase/fb_firestore.dart';
+import 'package:memoryapp/firebase/fb_storage.dart';
+import 'package:memoryapp/models/post_model.dart';
 import 'package:memoryapp/models/simple_models.dart';
+import 'package:memoryapp/provider/user_provider.dart';
+import 'package:memoryapp/screens/home.dart';
 import 'package:memoryapp/utils/app_colors.dart';
+import 'package:memoryapp/widgets/confirmation_dialoge_model.dart';
 import 'package:memoryapp/widgets/custome_button.dart';
 import 'package:memoryapp/widgets/simple_reuseable_widgets.dart';
 import 'package:memoryapp/widgets/text_comp.dart';
+import 'package:path/path.dart' as p;
+import 'package:provider/provider.dart';
 
 class PostScreen extends StatefulWidget {
   List<GroupNameAndId> groupList;
@@ -17,7 +27,109 @@ class PostScreen extends StatefulWidget {
 }
 
 class _PostScreenState extends State<PostScreen> {
-  TextEditingController tagsController = TextEditingController();
+  File? _image;
+  bool loading = false;
+  List<String> postTags = [];
+  TextEditingController postTagController = TextEditingController();
+  TextEditingController descTextController = TextEditingController();
+  GroupNameAndId selectedGroup = GroupNameAndId(groupId: "", groupName: "");
+
+  getImage() async {
+    try {
+      var tempImg = await pickImage();
+      setState(() {
+        _image = tempImg;
+      });
+    } catch (e) {
+      return alertUser(
+          context: context, alertText: "Error while image graving");
+    }
+  }
+
+  getGroup(GroupNameAndId item) {
+    setState(() {
+      selectedGroup = item;
+    });
+
+    Navigator.pop(context);
+  }
+
+  // additem to list
+  addItemToList() {
+    if (postTagController.text.isEmpty) {
+      return alertUser(context: context, alertText: "Empty tag!");
+    }
+    setState(() {
+      postTags.add(postTagController.text);
+      postTagController.clear();
+    });
+  }
+
+  // remove item from list
+  removeItem(int index) {
+    setState(() {
+      postTags.removeAt(index);
+    });
+  }
+
+  // post data
+
+  postData() async {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final user = userProvider.user;
+    if (_image == null ||
+        selectedGroup.groupName == " " ||
+        postTags.isEmpty ||
+        descTextController.text.isEmpty) {
+      return alertUser(context: context, alertText: "Fill all the field's");
+    }
+
+    setState(() {
+      loading = true;
+    });
+
+    // image upload process to fb bucket!!
+    String fileName = p.basename(_image!.path);
+    String imagePath = 'groupProfilePic/${DateTime.now()}$fileName';
+
+    try {
+      var url = await uploadFile(
+          image: _image!, imagePath: imagePath, context: context);
+
+      var postData = PostModel(
+          postImage: url,
+          tags: postTags,
+          description: descTextController.text,
+          groupId: selectedGroup.groupId,
+          postedAt: DateTime.now(),
+          groupName: selectedGroup.groupName,
+          likes: [],
+          posterId: user.id);
+
+      addingDataInFbCollection(
+          data: postData.toMap(),
+          collectionName: "allposts",
+          errorText: "Creating group error",
+          context: context);
+      setState(() {
+        loading = false;
+      });
+      return callBackAlert(
+        context: context,
+        alertText: "Post done!",
+        onPressed: () {
+          Navigator.pushNamed(context, HomeScreen.routeName);
+        },
+      );
+    } catch (e) {
+      setState(() {
+        loading = false;
+      });
+      return alertUser(
+          context: context, alertText: "Error while uploading profile pic");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,65 +148,78 @@ class _PostScreenState extends State<PostScreen> {
           children: [
             const SizedBox(height: 20),
             // post image/video etc btn
-            Center(
-              child: InkWell(
-                onTap: () {},
-                child: Column(
-                  children: [
-                    Container(
-                      width: 70,
-                      height: 70,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(45),
-                        color: AppColors.appbarColor,
-                      ),
-                      child: const Icon(
-                        Icons.folder,
-                        color: AppColors.whiteColor,
-                        size: 30,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    TextComp(
-                      text: "Upload Img/Video/pdf/audio",
-                      size: 14,
-                    )
-                  ],
-                ),
-              ),
-            ),
+            imagePickerPlaceholderComp(onTap: getImage, image: _image),
+            // Center(
+            //   child: InkWell(
+            //     onTap: () {},
+            //     child: Column(
+            //       children: [
+            //         Container(
+            //           width: 70,
+            //           height: 70,
+            //           decoration: BoxDecoration(
+            //             borderRadius: BorderRadius.circular(45),
+            //             color: AppColors.appbarColor,
+            //           ),
+            //           child: const Icon(
+            //             Icons.folder,
+            //             color: AppColors.whiteColor,
+            //             size: 30,
+            //           ),
+            //         ),
+            //         const SizedBox(height: 6),
+            //         TextComp(
+            //           text: "Upload Img/Video/pdf/audio",
+            //           size: 14,
+            //         ),
+            //       ],
+            //     ),
+            //   ),
+            // ),
 
             const SizedBox(height: 30),
 
             // select group from dropdown
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15),
-              child: InkWell(
-                onTap: () {},
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  height: 55,
-                  decoration: BoxDecoration(
-                      border: Border.all(color: AppColors.greyColor, width: 1),
-                      borderRadius: BorderRadius.circular(10)),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      TextComp(text: "Groups"),
-                      const Icon(Icons.expand_more)
-                    ],
-                  ),
-                ),
-              ),
-            ),
+            selectGroup(),
 
             const SizedBox(height: 30),
 
+            // group tags component
+            postTags.isNotEmpty
+                ? Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 15),
+                    child: Container(
+                      height: 160,
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 10, horizontal: 10),
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: AppColors.lightGrey,
+                      ),
+                      child: GridView.builder(
+                        itemCount: postTags.length,
+                        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                            maxCrossAxisExtent:
+                                MediaQuery.of(context).size.width / 2,
+                            mainAxisExtent: 40,
+                            crossAxisSpacing: 5,
+                            mainAxisSpacing: 10),
+                        itemBuilder: (context, index) {
+                          return showCaseItemComp(
+                              itemText: postTags[index],
+                              onTap: () => removeItem(index));
+                        },
+                      ),
+                    ),
+                  )
+                : Container(),
+
             // add tags
             multipleAddInputComp(
-              controller: tagsController,
+              controller: postTagController,
               hintText: "#tags",
-              onPressed: () {},
+              onPressed: () => addItemToList(),
             ),
 
             const SizedBox(height: 30),
@@ -109,11 +234,11 @@ class _PostScreenState extends State<PostScreen> {
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(color: AppColors.greyColor, width: 1)),
-                child: const TextField(
-                  // controller: textController,
+                child: TextField(
+                  controller: descTextController,
                   keyboardType: TextInputType.multiline,
                   maxLines: null,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: "Description",
                     hintStyle: TextStyle(
                       fontSize: 18,
@@ -127,21 +252,83 @@ class _PostScreenState extends State<PostScreen> {
             const SizedBox(height: 30),
 
             //  post btn
+
             Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: CustomButton(
-                text: "Post",
-                onPressed: () {
-                  for (var element in widget.groupList) {
-                    print(element.groupId);
-                  }
-                },
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 15),
+              child: sendinglodingComp(
+                  loading: loading,
+                  onPressed: () => postData(),
+                  loadderText: "Posting wait...",
+                  btnText: "Post"),
             ),
+            // Padding(
+            //   padding: const EdgeInsets.all(8.0),
+            //   child: CustomButton(
+            //     text: "Post",
+            //     onPressed: () => postData(),
+            //   ),
+            // ),
             const SizedBox(height: 10),
           ],
         ),
       ),
     );
   }
+
+  Widget selectGroup() => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 15),
+        child: InkWell(
+          onTap: () {
+            showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  title: TextComp(text: "Select a Group"),
+                  content: SizedBox(
+                    height: 250,
+                    child: ListView.builder(
+                      itemCount: widget.groupList.length,
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                          onTap: () => getGroup(widget.groupList[index]),
+                          title:
+                              TextComp(text: widget.groupList[index].groupName),
+                        );
+                      },
+                    ),
+                  ),
+                  actions: [
+                    ElevatedButton(
+                      onPressed: () => Navigator.pop(context),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.black,
+                      ),
+                      child: TextComp(
+                        text: "Close",
+                        color: AppColors.whiteColor,
+                      ),
+                    ),
+                  ],
+                );
+              },
+            );
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            height: 55,
+            decoration: BoxDecoration(
+                border: Border.all(color: AppColors.greyColor, width: 1),
+                borderRadius: BorderRadius.circular(10)),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                selectedGroup.groupName == ""
+                    ? TextComp(text: "Groups")
+                    : TextComp(text: selectedGroup!.groupName),
+                const Icon(Icons.expand_more)
+              ],
+            ),
+          ),
+        ),
+      );
 }

@@ -37,13 +37,15 @@ updateUserInfoFb({
 
 // create a new group
 
-createGroupInFb({
+addingDataInFbCollection({
   required data,
   required BuildContext context,
+  required String collectionName,
+  required String errorText,
 }) {
   try {
-    FirebaseFirestore.instance.collection("groups").add(data);
+    FirebaseFirestore.instance.collection(collectionName).add(data);
   } catch (e) {
-    return alertUser(context: context, alertText: "Creating group problem");
+    return alertUser(context: context, alertText: errorText);
   }
 }

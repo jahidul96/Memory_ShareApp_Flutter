@@ -62,6 +62,9 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
       loading = true;
     });
 
+// adding user id to groupmember
+    friendEmails.add(user.email);
+
 // image upload process to fb bucket!!
     String fileName = p.basename(_image!.path);
     String imagePath = 'groupProfilePic/${DateTime.now()}$fileName';
@@ -79,7 +82,11 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
           adminId: user.id,
           creatorName: user.username);
 
-      createGroupInFb(data: groupData.toMap(), context: context);
+      addingDataInFbCollection(
+          data: groupData.toMap(),
+          collectionName: "groups",
+          errorText: "Creating group error",
+          context: context);
       setState(() {
         loading = false;
       });
@@ -262,37 +269,4 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
       ),
     );
   }
-
-  Widget showCaseItemComp(
-          {required String itemText, required Function()? onTap}) =>
-      Container(
-        decoration: BoxDecoration(
-          color: AppColors.whiteColor,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Stack(
-          children: [
-            Center(
-              child: TextComp(
-                text: itemText.length > 12
-                    ? "${itemText.substring(0, 12)}..."
-                    : itemText,
-                size: 14,
-                fontweight: FontWeight.normal,
-              ),
-            ),
-            Positioned(
-                right: 0,
-                top: 0,
-                child: InkWell(
-                  onTap: onTap,
-                  child: const Icon(
-                    Icons.close,
-                    size: 17,
-                    color: AppColors.buttonColor,
-                  ),
-                ))
-          ],
-        ),
-      );
 }

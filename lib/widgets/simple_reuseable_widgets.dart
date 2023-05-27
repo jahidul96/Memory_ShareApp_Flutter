@@ -187,12 +187,9 @@ Widget sendinglodingComp({
         ? Center(
             child: Column(
               children: [
-                const SizedBox(
-                  height: 40,
-                ),
                 const CircularProgressIndicator(),
                 const SizedBox(
-                  height: 40,
+                  height: 20,
                 ),
                 TextComp(text: loadderText)
               ],
@@ -202,3 +199,37 @@ Widget sendinglodingComp({
             text: btnText,
             onPressed: onPressed,
           );
+
+// showCase item comp
+Widget showCaseItemComp(
+        {required String itemText, required Function()? onTap}) =>
+    Container(
+      decoration: BoxDecoration(
+        color: AppColors.whiteColor,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Stack(
+        children: [
+          Center(
+            child: TextComp(
+              text: itemText.length > 12
+                  ? "${itemText.substring(0, 12)}..."
+                  : itemText,
+              size: 14,
+              fontweight: FontWeight.normal,
+            ),
+          ),
+          Positioned(
+              right: 0,
+              top: 0,
+              child: InkWell(
+                onTap: onTap,
+                child: const Icon(
+                  Icons.close,
+                  size: 17,
+                  color: AppColors.buttonColor,
+                ),
+              ))
+        ],
+      ),
+    );
