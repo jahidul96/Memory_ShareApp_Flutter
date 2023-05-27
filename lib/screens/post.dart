@@ -1,12 +1,16 @@
+// ignore_for_file: must_be_immutable
+
 import 'package:flutter/material.dart';
+import 'package:memoryapp/models/simple_models.dart';
 import 'package:memoryapp/utils/app_colors.dart';
 import 'package:memoryapp/widgets/custome_button.dart';
 import 'package:memoryapp/widgets/simple_reuseable_widgets.dart';
 import 'package:memoryapp/widgets/text_comp.dart';
 
 class PostScreen extends StatefulWidget {
+  List<GroupNameAndId> groupList;
   static const routeName = "PostScreen";
-  const PostScreen({super.key});
+  PostScreen({super.key, required this.groupList});
 
   @override
   State<PostScreen> createState() => _PostScreenState();
@@ -127,7 +131,11 @@ class _PostScreenState extends State<PostScreen> {
               padding: const EdgeInsets.all(8.0),
               child: CustomButton(
                 text: "Post",
-                onPressed: () {},
+                onPressed: () {
+                  for (var element in widget.groupList) {
+                    print(element.groupId);
+                  }
+                },
               ),
             ),
             const SizedBox(height: 10),

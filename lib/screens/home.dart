@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:memoryapp/models/group_model.dart';
+import 'package:memoryapp/models/simple_models.dart';
 import 'package:memoryapp/models/user_model.dart';
 import 'package:memoryapp/provider/user_provider.dart';
 import 'package:memoryapp/screens/group/create_group.dart';
@@ -14,6 +16,8 @@ import 'package:memoryapp/widgets/single_post.dart';
 import 'package:memoryapp/widgets/single_group.dart';
 import 'package:memoryapp/firebase/fb_firestore.dart';
 import 'package:provider/provider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class HomeScreen extends StatefulWidget {
   static const routeName = "HomeScreen";
@@ -26,6 +30,8 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   UserModel userData =
       UserModel(profilePic: "", id: "", email: "", username: "");
+
+  List<GroupNameAndId> groupList = [];
 
   @override
   void initState() {
@@ -116,12 +122,55 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
 
                 // groups tab content
-                ListView.builder(
-                  itemCount: 8,
-                  itemBuilder: (context, index) {
-                    return const SingleGroup();
+                StreamBuilder(
+                  stream: FirebaseFirestore.instance
+                      .collection("groups")
+                      .where("adminId",
+                          isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+
+                    if (snapshot.hasData) {
+                      var data = snapshot.data!.docs;
+                      List<GroupModel> myGroupList = [];
+                      List myGroupIds = [];
+
+                      // injecttind data and group id to list
+                      for (var element in data) {
+                        myGroupList.add(GroupModel.fromMap(element.data()));
+                        myGroupIds.add(element.id);
+
+                        groupList.add(GroupNameAndId(
+                            groupId: element.id,
+                            groupName: element.data()["groupName"]));
+                      }
+                      return ListView.builder(
+                        itemCount: snapshot.data!.docs.length,
+                        itemBuilder: (context, index) {
+                          // grave group name and id
+
+                          // return singleGroupComp
+                          return SingleGroup(
+                            groupData: myGroupList[index],
+                            groupId: myGroupIds[index],
+                          );
+                        },
+                      );
+                    }
+                    return Center(
+                      child: TextComp(
+                        text: "No Group Till Now",
+                        color: AppColors.black,
+                        size: 20,
+                      ),
+                    );
                   },
-                ),
+                )
               ]),
             ),
 
@@ -132,7 +181,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 text: "Add Memory",
                 height: 60,
                 onPressed: () {
-                  Navigator.pushNamed(context, PostScreen.routeName);
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PostScreen(groupList: groupList),
+                      ));
                 },
               ),
             )

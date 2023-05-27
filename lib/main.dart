@@ -41,7 +41,6 @@ class MyApp extends StatelessWidget {
           ProfileScreen.routeName: (context) => const ProfileScreen(),
           SingleGroupDeatail.routeName: (context) => const SingleGroupDeatail(),
           CreateGroupScreen.routeName: (context) => const CreateGroupScreen(),
-          PostScreen.routeName: (context) => const PostScreen(),
         },
         home: const AuthCheckScreen(),
       ),

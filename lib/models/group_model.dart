@@ -4,6 +4,7 @@ class GroupModel {
   String groupProfilePic;
   String groupName;
   List<String> groupMember;
+  String creatorName;
   List<String> tags;
   DateTime createdAt;
   String adminId;
@@ -11,6 +12,7 @@ class GroupModel {
     required this.groupProfilePic,
     required this.groupName,
     required this.groupMember,
+    required this.creatorName,
     required this.tags,
     required this.createdAt,
     required this.adminId,
@@ -21,6 +23,7 @@ class GroupModel {
       'groupProfilePic': groupProfilePic,
       'groupName': groupName,
       'groupMember': groupMember,
+      'creatorName': creatorName,
       'tags': tags,
       'createdAt': createdAt.millisecondsSinceEpoch,
       'adminId': adminId,
@@ -32,6 +35,7 @@ class GroupModel {
       groupProfilePic: map['groupProfilePic'] ?? '',
       groupName: map['groupName'] ?? '',
       groupMember: List<String>.from(map['groupMember']),
+      creatorName: map['creatorName'] ?? '',
       tags: List<String>.from(map['tags']),
       createdAt: DateTime.fromMillisecondsSinceEpoch(map['createdAt']),
       adminId: map['adminId'] ?? '',

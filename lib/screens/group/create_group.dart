@@ -76,7 +76,8 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
           groupMember: friendEmails,
           tags: groupTags,
           createdAt: DateTime.now(),
-          adminId: user.id);
+          adminId: user.id,
+          creatorName: user.username);
 
       createGroupInFb(data: groupData.toMap(), context: context);
       setState(() {
