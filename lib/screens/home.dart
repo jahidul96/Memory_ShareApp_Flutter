@@ -1,5 +1,8 @@
+// ignore_for_file: prefer_is_empty
+
 import 'package:flutter/material.dart';
 import 'package:memoryapp/models/group_model.dart';
+import 'package:memoryapp/models/post_model.dart';
 import 'package:memoryapp/models/simple_models.dart';
 import 'package:memoryapp/models/user_model.dart';
 import 'package:memoryapp/provider/user_provider.dart';
@@ -32,7 +35,9 @@ class _HomeScreenState extends State<HomeScreen> {
   UserModel userData =
       UserModel(profilePic: "", id: "", email: "", username: "");
 
-  List<GroupNameAndId> groupList = [];
+  List<GroupInfo> groupList = [];
+
+  int groupIndex = 0;
 
   @override
   void initState() {
@@ -53,8 +58,13 @@ class _HomeScreenState extends State<HomeScreen> {
           .get();
 
       for (var element in snapshots.docs) {
-        groupList.add(GroupNameAndId(
-            groupId: element.id, groupName: element.data()["groupName"]));
+        groupList.add(
+          GroupInfo(
+              adminId: element.data()["adminId"],
+              groupId: element.id,
+              groupName: element.data()["groupName"],
+              groupProfilePic: element.data()["groupProfilePic"]),
+        );
       }
       setState(() {
         userData = UserModel.fromMap(data);
@@ -81,7 +91,9 @@ class _HomeScreenState extends State<HomeScreen> {
           backgroundColor: AppColors.appbarColor,
           elevation: 0,
           title: TextComp(
-            text: "Memory App",
+            text: groupList.isEmpty
+                ? "Memory App"
+                : groupList[groupIndex].groupName,
             size: 22,
             color: AppColors.whiteColor,
           ),
@@ -127,70 +139,119 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             Expanded(
-              child: TabBarView(children: [
-                // timeline tab content
-                const TimeLineTab(),
+              child: TabBarView(
+                children: [
+                  // timeline tab content
+                  groupList.isEmpty
+                      ? const Center(
+                          child: CircularProgressIndicator(),
+                        )
+                      : StreamBuilder(
+                          stream: FirebaseFirestore.instance
+                              .collection("allposts")
+                              .where("groupId",
+                                  isEqualTo: groupList[groupIndex].groupId)
+                              .snapshots(),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            }
 
-                // groups tab content
-                StreamBuilder(
-                  stream: FirebaseFirestore.instance
-                      .collection("groups")
-                      .where("groupMember", arrayContains: userData.email)
-                      .snapshots(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    }
+                            if (snapshot.data!.docs.length == 0) {
+                              return Center(
+                                child: TextComp(text: "No Post Till now"),
+                              );
+                            }
 
-                    if (snapshot.data!.docs.length == 0) {
-                      return Center(
-                        child: TextComp(text: "No group till now"),
-                      );
-                    }
+                            if (snapshot.hasData) {
+                              List<PostModel> selectedGroupPosts = [];
+                              var selectedGroupIds = [];
+                              var data = snapshot.data!.docs;
 
-                    if (snapshot.hasData) {
-                      var data = snapshot.data!.docs;
-                      List<GroupModel> myGroupList = [];
-                      List myGroupIds = [];
+                              for (var element in data) {
+                                selectedGroupPosts
+                                    .add(PostModel.fromMap(element.data()));
+                                selectedGroupIds.add(element.id);
+                              }
 
-                      // injecting data and group id to list
-                      for (var element in data) {
-                        myGroupList.add(
-                          GroupModel.fromMap(element.data()),
+                              return ListView.builder(
+                                itemCount: selectedGroupPosts.length,
+                                itemBuilder: (context, index) {
+                                  return SinglePostComp(
+                                    postData: selectedGroupPosts[index],
+                                    postId: selectedGroupIds[index],
+                                  );
+                                },
+                              );
+                            }
+                            return Center(
+                              child: TextComp(
+                                text: "No Post Till Now",
+                                color: AppColors.black,
+                                size: 20,
+                              ),
+                            );
+                          },
+                        ),
+
+                  // groups tab content
+                  StreamBuilder(
+                    stream: FirebaseFirestore.instance
+                        .collection("groups")
+                        .where("groupMember", arrayContains: userData.email)
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(
+                          child: CircularProgressIndicator(),
                         );
-                        myGroupIds.add(element.id);
-
-                        // groupList.add(
-                        //   GroupNameAndId(
-                        //       groupId: element.id,
-                        //       groupName: element.data()["groupName"]),
-                        // );
                       }
-                      return ListView.builder(
-                        itemCount: snapshot.data!.docs.length,
-                        itemBuilder: (context, index) {
-                          // grave group name and id
 
-                          // return singleGroupComp
-                          return SingleGroup(
-                            groupData: myGroupList[index],
-                            groupId: myGroupIds[index],
+                      if (snapshot.data!.docs.length == 0) {
+                        return Center(
+                          child: TextComp(text: "No group till now"),
+                        );
+                      }
+
+                      if (snapshot.hasData) {
+                        var data = snapshot.data!.docs;
+                        List<GroupModel> myGroupList = [];
+                        List myGroupIds = [];
+
+                        // injecting data and group id to list
+                        for (var element in data) {
+                          myGroupList.add(
+                            GroupModel.fromMap(element.data()),
                           );
-                        },
+                          myGroupIds.add(element.id);
+                        }
+                        return ListView.builder(
+                          itemCount: snapshot.data!.docs.length,
+                          itemBuilder: (context, index) {
+                            // grave group name and id
+
+                            // return singleGroupComp
+                            return SingleGroup(
+                              groupData: myGroupList[index],
+                              groupId: myGroupIds[index],
+                            );
+                          },
+                        );
+                      }
+                      return Center(
+                        child: TextComp(
+                          text: "No Group Till Now",
+                          color: AppColors.black,
+                          size: 20,
+                        ),
                       );
-                    }
-                    return Center(
-                      child: TextComp(
-                        text: "No Group Till Now",
-                        color: AppColors.black,
-                        size: 20,
-                      ),
-                    );
-                  },
-                )
-              ]),
+                    },
+                  ),
+                ],
+              ),
             ),
 
             // add memory button
@@ -213,8 +274,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
         // drawer section content
         drawer: Drawer(
-          child: ListView(
-            padding: EdgeInsets.zero,
+          child: Column(
+            // padding: EdgeInsets.zero,
             children: [
               // user profile section
               DrawerHeader(
@@ -291,31 +352,53 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                 ),
               ),
-              Column(
-                children: [
-                  // create group btn
-                  ListTile(
-                    onTap: () {
-                      Navigator.popAndPushNamed(
-                          context, CreateGroupScreen.routeName);
-                    },
-                    leading: const Icon(
-                      Icons.add,
-                      size: 28,
-                      color: AppColors.black,
+              Expanded(
+                child: Column(
+                  children: [
+                    // create group btn
+                    ListTile(
+                      onTap: () {
+                        Navigator.popAndPushNamed(
+                            context, CreateGroupScreen.routeName);
+                      },
+                      leading: const Icon(
+                        Icons.add,
+                        size: 28,
+                        color: AppColors.black,
+                      ),
+                      horizontalTitleGap: 0,
+                      title: TextComp(
+                        text: "Create Group",
+                        fontweight: FontWeight.bold,
+                        size: 18,
+                      ),
                     ),
-                    horizontalTitleGap: 0,
-                    title: TextComp(
-                      text: "Create Group",
-                      fontweight: FontWeight.bold,
-                      size: 18,
-                    ),
-                  ),
 
-                  // group list
+                    // group list
 
-                  groupListTile(),
-                ],
+                    groupList.isEmpty
+                        ? Container()
+                        : Expanded(
+                            child: ListView.builder(
+                              padding: EdgeInsets.zero,
+                              shrinkWrap: true,
+                              physics: const ClampingScrollPhysics(),
+                              itemCount: groupList.length,
+                              itemBuilder: (context, index) {
+                                return groupListTile(
+                                  groupInfo: groupList[index],
+                                  onTap: () {
+                                    setState(() {
+                                      groupIndex = index;
+                                    });
+                                    Navigator.pop(context);
+                                  },
+                                );
+                              },
+                            ),
+                          ),
+                  ],
+                ),
               ),
             ],
           ),

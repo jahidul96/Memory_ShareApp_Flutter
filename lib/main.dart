@@ -7,7 +7,6 @@ import 'package:memoryapp/screens/auth/login.dart';
 import 'package:memoryapp/screens/group/create_group.dart';
 import 'package:memoryapp/screens/group/single_group_details.dart';
 import 'package:memoryapp/screens/home.dart';
-import 'package:memoryapp/screens/post.dart';
 import 'package:memoryapp/screens/profile/profile.dart';
 import 'package:provider/provider.dart';
 

@@ -15,7 +15,7 @@ class _TimeLineTabState extends State<TimeLineTab> {
       body: ListView.builder(
         itemCount: 5,
         itemBuilder: (context, index) {
-          return const SinglePostComp();
+          return Container();
         },
       ),
     );

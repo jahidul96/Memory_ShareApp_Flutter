@@ -1,4 +1,4 @@
-// ignore_for_file: must_be_immutable, use_build_context_synchronously
+// ignore_for_file: must_be_immutable, use_build_context_synchronously, depend_on_referenced_packages
 
 import 'dart:io';
 
@@ -11,14 +11,13 @@ import 'package:memoryapp/provider/user_provider.dart';
 import 'package:memoryapp/screens/home.dart';
 import 'package:memoryapp/utils/app_colors.dart';
 import 'package:memoryapp/widgets/confirmation_dialoge_model.dart';
-import 'package:memoryapp/widgets/custome_button.dart';
 import 'package:memoryapp/widgets/simple_reuseable_widgets.dart';
 import 'package:memoryapp/widgets/text_comp.dart';
 import 'package:path/path.dart' as p;
 import 'package:provider/provider.dart';
 
 class PostScreen extends StatefulWidget {
-  List<GroupNameAndId> groupList;
+  List<GroupInfo> groupList;
   static const routeName = "PostScreen";
   PostScreen({super.key, required this.groupList});
 
@@ -32,7 +31,8 @@ class _PostScreenState extends State<PostScreen> {
   List<String> postTags = [];
   TextEditingController postTagController = TextEditingController();
   TextEditingController descTextController = TextEditingController();
-  GroupNameAndId selectedGroup = GroupNameAndId(groupId: "", groupName: "");
+  GroupInfo selectedGroup =
+      GroupInfo(groupId: "", groupName: "", groupProfilePic: "", adminId: "");
 
   getImage() async {
     try {
@@ -46,7 +46,7 @@ class _PostScreenState extends State<PostScreen> {
     }
   }
 
-  getGroup(GroupNameAndId item) {
+  getGroup(GroupInfo item) {
     setState(() {
       selectedGroup = item;
     });

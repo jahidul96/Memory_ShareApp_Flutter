@@ -1,6 +1,8 @@
 import 'dart:io';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:memoryapp/models/simple_models.dart';
 import 'package:memoryapp/utils/app_colors.dart';
 import 'package:memoryapp/widgets/custome_button.dart';
 import 'package:memoryapp/widgets/text_comp.dart';
@@ -84,16 +86,30 @@ Widget emailProfile() => Container(
       ),
     );
 
-Widget groupListTile() => InkWell(
-      onTap: () {},
+Widget groupListTile({
+  required GroupInfo groupInfo,
+  required Function()? onTap,
+}) =>
+    InkWell(
+      onTap: onTap,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
         child: Row(
           children: [
-            const Icon(
-              Icons.person,
-              size: 30,
-            ),
+            groupInfo.groupProfilePic != ""
+                ? ClipRRect(
+                    borderRadius: BorderRadius.circular(100),
+                    child: Image.network(
+                      groupInfo.groupProfilePic,
+                      width: 45,
+                      height: 45,
+                      fit: BoxFit.cover,
+                    ),
+                  )
+                : const Icon(
+                    Icons.person,
+                    size: 30,
+                  ),
             const SizedBox(
               width: 10,
             ),
@@ -101,10 +117,17 @@ Widget groupListTile() => InkWell(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  TextComp(text: "Share"),
                   TextComp(
-                    text: "From you",
+                      text: groupInfo.groupName != ""
+                          ? groupInfo.groupName
+                          : "groupname"),
+                  TextComp(
+                    text: FirebaseAuth.instance.currentUser!.uid ==
+                            groupInfo.adminId
+                        ? "From you"
+                        : "",
                     fontweight: FontWeight.normal,
+                    size: 13,
                   ),
                 ],
               ),

@@ -1,29 +1,37 @@
 import 'dart:convert';
 
-class GroupNameAndId {
+class GroupInfo {
   String groupId;
   String groupName;
-  GroupNameAndId({
+  String groupProfilePic;
+  String adminId;
+  GroupInfo({
     required this.groupId,
     required this.groupName,
+    required this.groupProfilePic,
+    required this.adminId,
   });
 
   Map<String, dynamic> toMap() {
     return {
       'groupId': groupId,
       'groupName': groupName,
+      'groupProfilePic': groupProfilePic,
+      'adminId': adminId,
     };
   }
 
-  factory GroupNameAndId.fromMap(Map<String, dynamic> map) {
-    return GroupNameAndId(
+  factory GroupInfo.fromMap(Map<String, dynamic> map) {
+    return GroupInfo(
       groupId: map['groupId'] ?? '',
       groupName: map['groupName'] ?? '',
+      groupProfilePic: map['groupProfilePic'] ?? '',
+      adminId: map['adminId'] ?? '',
     );
   }
 
   String toJson() => json.encode(toMap());
 
-  factory GroupNameAndId.fromJson(String source) =>
-      GroupNameAndId.fromMap(json.decode(source));
+  factory GroupInfo.fromJson(String source) =>
+      GroupInfo.fromMap(json.decode(source));
 }
