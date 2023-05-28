@@ -28,7 +28,6 @@ class PostScreen extends StatefulWidget {
 class _PostScreenState extends State<PostScreen> {
   File? _image;
   bool loading = false;
-  List<String> postTags = [];
   TextEditingController postTagController = TextEditingController();
   TextEditingController descTextController = TextEditingController();
   GroupInfo selectedGroup =
@@ -54,24 +53,6 @@ class _PostScreenState extends State<PostScreen> {
     Navigator.pop(context);
   }
 
-  // additem to list
-  addItemToList() {
-    if (postTagController.text.isEmpty) {
-      return alertUser(context: context, alertText: "Empty tag!");
-    }
-    setState(() {
-      postTags.add(postTagController.text);
-      postTagController.clear();
-    });
-  }
-
-  // remove item from list
-  removeItem(int index) {
-    setState(() {
-      postTags.removeAt(index);
-    });
-  }
-
   // post data
 
   postData() async {
@@ -79,7 +60,6 @@ class _PostScreenState extends State<PostScreen> {
     final user = userProvider.user;
     if (_image == null ||
         selectedGroup.groupName == " " ||
-        postTags.isEmpty ||
         descTextController.text.isEmpty) {
       return alertUser(context: context, alertText: "Fill all the field's");
     }
@@ -98,7 +78,6 @@ class _PostScreenState extends State<PostScreen> {
 
       var postData = PostModel(
           postImage: url,
-          tags: postTags,
           description: descTextController.text,
           groupId: selectedGroup.groupId,
           postedAt: DateTime.now(),
@@ -184,46 +163,6 @@ class _PostScreenState extends State<PostScreen> {
 
             const SizedBox(height: 30),
 
-            // group tags component
-            postTags.isNotEmpty
-                ? Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 15),
-                    child: Container(
-                      height: 160,
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 10, horizontal: 10),
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: AppColors.lightGrey,
-                      ),
-                      child: GridView.builder(
-                        itemCount: postTags.length,
-                        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                            maxCrossAxisExtent:
-                                MediaQuery.of(context).size.width / 2,
-                            mainAxisExtent: 40,
-                            crossAxisSpacing: 5,
-                            mainAxisSpacing: 10),
-                        itemBuilder: (context, index) {
-                          return showCaseItemComp(
-                              itemText: postTags[index],
-                              onTap: () => removeItem(index));
-                        },
-                      ),
-                    ),
-                  )
-                : Container(),
-
-            // add tags
-            multipleAddInputComp(
-              controller: postTagController,
-              hintText: "#tags",
-              onPressed: () => addItemToList(),
-            ),
-
-            const SizedBox(height: 30),
-
 // description input
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -252,7 +191,6 @@ class _PostScreenState extends State<PostScreen> {
             const SizedBox(height: 30),
 
             //  post btn
-
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15),
               child: sendinglodingComp(
@@ -261,13 +199,7 @@ class _PostScreenState extends State<PostScreen> {
                   loadderText: "Posting wait...",
                   btnText: "Post"),
             ),
-            // Padding(
-            //   padding: const EdgeInsets.all(8.0),
-            //   child: CustomButton(
-            //     text: "Post",
-            //     onPressed: () => postData(),
-            //   ),
-            // ),
+
             const SizedBox(height: 10),
           ],
         ),
@@ -324,7 +256,7 @@ class _PostScreenState extends State<PostScreen> {
               children: [
                 selectedGroup.groupName == ""
                     ? TextComp(text: "Groups")
-                    : TextComp(text: selectedGroup!.groupName),
+                    : TextComp(text: selectedGroup.groupName),
                 const Icon(Icons.expand_more)
               ],
             ),

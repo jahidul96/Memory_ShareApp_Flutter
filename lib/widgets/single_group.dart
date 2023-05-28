@@ -21,8 +21,8 @@ class SingleGroup extends StatelessWidget {
         alertUser(context: context, alertText: groupId);
       },
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10),
-        margin: const EdgeInsets.symmetric(vertical: 15),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        margin: const EdgeInsets.symmetric(vertical: 10),
         child: Row(
           // crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -32,13 +32,13 @@ class SingleGroup extends StatelessWidget {
               borderRadius: BorderRadius.circular(10),
               child: Image.network(
                 groupData.groupProfilePic,
-                width: 150,
-                height: 100,
+                width: 90,
+                height: 80,
                 fit: BoxFit.cover,
               ),
             ),
 
-            const SizedBox(width: 10),
+            const SizedBox(width: 20),
 
             // group right content
 
@@ -47,23 +47,11 @@ class SingleGroup extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   TextComp(text: groupData.groupName),
-                  const SizedBox(height: 5),
-                  TextComp(text: groupData.creatorName),
-                  const SizedBox(height: 5),
-                  TextComp(text: "#tags"),
-                  // Container(
-                  //   width: double.infinity,
-                  //   height: 60,
-                  //   // color: Colors.red,
-                  //   child: GridView.builder(
-                  //     itemCount: 3,
-                  //     gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                  //         maxCrossAxisExtent: 80, mainAxisExtent: 30),
-                  //     itemBuilder: (context, index) {
-                  //       return TextComp(text: "#tags");
-                  //     },
-                  //   ),
-                  // )
+                  TextComp(
+                    text: groupData.creatorName,
+                    fontweight: FontWeight.normal,
+                    size: 14,
+                  ),
                 ],
               ),
             )

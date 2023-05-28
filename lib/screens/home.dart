@@ -20,8 +20,6 @@ import 'package:memoryapp/widgets/single_group.dart';
 import 'package:memoryapp/firebase/fb_firestore.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:memoryapp/widgets/tab_comp/timeline_tab_comp.dart';
 
 class HomeScreen extends StatefulWidget {
   static const routeName = "HomeScreen";
@@ -126,12 +124,12 @@ class _HomeScreenState extends State<HomeScreen> {
               child: const TabBar(
                 dividerColor: AppColors.black,
                 labelColor: AppColors.black,
-                indicatorWeight: 3.0,
+                indicatorWeight: 2.0,
                 indicatorSize: TabBarIndicatorSize.tab,
                 indicatorColor: AppColors.black,
                 labelStyle: TextStyle(fontWeight: FontWeight.bold),
                 unselectedLabelStyle:
-                    TextStyle(fontWeight: FontWeight.normal, fontSize: 17),
+                    TextStyle(fontWeight: FontWeight.normal, fontSize: 16),
                 tabs: [
                   Text("Timeline"),
                   Text("Groups"),
@@ -162,7 +160,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
                             if (snapshot.data!.docs.length == 0) {
                               return Center(
-                                child: TextComp(text: "No Post Till now"),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 20),
+                                  child: TextComp(
+                                    text:
+                                        "Welcome, No post Till now create some!",
+                                    align: TextAlign.center,
+                                    size: 22,
+                                    fontweight: FontWeight.normal,
+                                  ),
+                                ),
                               );
                             }
 
@@ -188,10 +196,16 @@ class _HomeScreenState extends State<HomeScreen> {
                               );
                             }
                             return Center(
-                              child: TextComp(
-                                text: "No Post Till Now",
-                                color: AppColors.black,
-                                size: 20,
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 20),
+                                child: TextComp(
+                                  text:
+                                      "Welcome, No post Till now create some!",
+                                  align: TextAlign.center,
+                                  size: 20,
+                                  fontweight: FontWeight.normal,
+                                ),
                               ),
                             );
                           },

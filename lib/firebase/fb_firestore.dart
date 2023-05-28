@@ -35,6 +35,19 @@ updateUserInfoFb({
   }
 }
 
+// update user info
+likeFbPost({
+  required data,
+  required BuildContext context,
+  required String docId,
+}) async {
+  try {
+    FirebaseFirestore.instance.collection("allposts").doc(docId).update(data);
+  } catch (e) {
+    return alertUser(context: context, alertText: "Data update problem");
+  }
+}
+
 // create a new group
 
 addingDataInFbCollection({

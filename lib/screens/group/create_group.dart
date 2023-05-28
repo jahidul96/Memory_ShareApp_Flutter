@@ -31,10 +31,10 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
   TextEditingController groupNameController = TextEditingController();
   TextEditingController groupMemberEmailController = TextEditingController();
   TextEditingController groupTagController = TextEditingController();
+  bool next = false;
 
   // list
   List<String> friendEmails = [];
-  List<String> groupTags = [];
 
   getImage() async {
     try {
@@ -53,7 +53,6 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
     final user = userProvider.user;
     if (_image == null ||
         groupNameController.text.isEmpty ||
-        groupTags.isEmpty ||
         friendEmails.isEmpty) {
       return alertUser(context: context, alertText: "Fill all the field's!");
     }
@@ -77,7 +76,6 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
           groupProfilePic: url,
           groupName: groupNameController.text,
           groupMember: friendEmails,
-          tags: groupTags,
           createdAt: DateTime.now(),
           adminId: user.id,
           creatorName: user.username);
@@ -107,39 +105,23 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
   }
 
 // additem to list
-  addItemToList(String name) {
-    if (name == "email") {
-      if (groupMemberEmailController.text.isEmpty ||
-          !groupMemberEmailController.text.contains("@gmail.com")) {
-        return alertUser(
-            context: context, alertText: "Empty or wrong email format!");
-      }
-      setState(() {
-        friendEmails.add(groupMemberEmailController.text);
-        groupMemberEmailController.clear();
-      });
-    } else {
-      if (groupTagController.text.isEmpty) {
-        return alertUser(context: context, alertText: "Empty tag!");
-      }
-      setState(() {
-        groupTags.add(groupTagController.text);
-        groupTagController.clear();
-      });
+  addItemToList() {
+    if (groupMemberEmailController.text.isEmpty ||
+        !groupMemberEmailController.text.contains("@gmail.com")) {
+      return alertUser(
+          context: context, alertText: "Empty or wrong email format!");
     }
+    setState(() {
+      friendEmails.add(groupMemberEmailController.text);
+      groupMemberEmailController.clear();
+    });
   }
 
 // remove item from list
-  removeItem(String name, int index) {
-    if (name == "email") {
-      setState(() {
-        friendEmails.removeAt(index);
-      });
-    } else {
-      setState(() {
-        groupTags.removeAt(index);
-      });
-    }
+  removeItem(int index) {
+    setState(() {
+      friendEmails.removeAt(index);
+    });
   }
 
   @override
@@ -154,116 +136,125 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
           color: AppColors.whiteColor,
           size: 20,
         ),
+        actions: [
+          next
+              ? IconButton(
+                  onPressed: () {
+                    setState(() {
+                      next = !next;
+                    });
+                  },
+                  icon: const Icon(Icons.close))
+              : Container(),
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
             const SizedBox(height: 30),
-            // group image
-            imagePickerPlaceholderComp(onTap: getImage, image: _image),
+            next
+                ? Column(
+                    children: [
+                      // friends email component
+                      friendEmails.isNotEmpty
+                          ? Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 15),
+                              child: Container(
+                                height: 160,
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 10, horizontal: 10),
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  color: AppColors.lightGrey,
+                                ),
+                                child: GridView.builder(
+                                  physics: const ClampingScrollPhysics(),
+                                  itemCount: friendEmails.length,
+                                  gridDelegate:
+                                      SliverGridDelegateWithMaxCrossAxisExtent(
+                                          maxCrossAxisExtent:
+                                              MediaQuery.of(context)
+                                                      .size
+                                                      .width /
+                                                  2,
+                                          mainAxisExtent: 40,
+                                          crossAxisSpacing: 5,
+                                          mainAxisSpacing: 10),
+                                  itemBuilder: (context, index) {
+                                    return showCaseItemComp(
+                                        itemText: friendEmails[index],
+                                        onTap: () => removeItem(index));
+                                  },
+                                ),
+                              ),
+                            )
+                          : Container(),
 
-            const SizedBox(height: 10),
-            // groupname
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-              child: SimpleTextInput(
-                controller: groupNameController,
-                hintText: "group name",
-              ),
-            ),
-            const SizedBox(height: 10),
+                      // group member
+                      multipleAddInputComp(
+                        controller: groupMemberEmailController,
+                        hintText: "group members email",
+                        onPressed: () => addItemToList(),
+                      ),
 
-            // friends email component
-            friendEmails.isNotEmpty
-                ? Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 15),
-                    child: Container(
-                      height: 160,
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 10, horizontal: 10),
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: AppColors.lightGrey,
+                      const SizedBox(height: 30),
+
+                      // lodder component
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        child: sendinglodingComp(
+                          loading: loading,
+                          loadderText: "Creating group wait...",
+                          btnText: "Create Group",
+                          onPressed: () => createGroup(),
+                        ),
                       ),
-                      child: GridView.builder(
-                        physics: const ClampingScrollPhysics(),
-                        itemCount: friendEmails.length,
-                        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                            maxCrossAxisExtent:
-                                MediaQuery.of(context).size.width / 2,
-                            mainAxisExtent: 40,
-                            crossAxisSpacing: 5,
-                            mainAxisSpacing: 10),
-                        itemBuilder: (context, index) {
-                          return showCaseItemComp(
-                              itemText: friendEmails[index],
-                              onTap: () => removeItem("email", index));
-                        },
-                      ),
-                    ),
+                    ],
                   )
-                : Container(),
+                :
 
-            // group member
-            multipleAddInputComp(
-              controller: groupMemberEmailController,
-              hintText: "group members email",
-              onPressed: () => addItemToList("email"),
-            ),
+                // image and group name
 
-            const SizedBox(height: 20),
+                Column(
+                    children: [
+                      // group image
+                      imagePickerPlaceholderComp(
+                          onTap: getImage, image: _image),
 
-            // group tags component
-            groupTags.isNotEmpty
-                ? Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 15),
-                    child: Container(
-                      height: 160,
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 10, horizontal: 10),
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: AppColors.lightGrey,
+                      const SizedBox(height: 10),
+                      // groupname
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 15, vertical: 10),
+                        child: SimpleTextInput(
+                          controller: groupNameController,
+                          hintText: "group name",
+                        ),
                       ),
-                      child: GridView.builder(
-                        itemCount: groupTags.length,
-                        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                            maxCrossAxisExtent:
-                                MediaQuery.of(context).size.width / 2,
-                            mainAxisExtent: 40,
-                            crossAxisSpacing: 5,
-                            mainAxisSpacing: 10),
-                        itemBuilder: (context, index) {
-                          return showCaseItemComp(
-                              itemText: groupTags[index],
-                              onTap: () => removeItem("tags", index));
-                        },
+                      const SizedBox(height: 10),
+
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: CustomButton(
+                          text: "Next",
+                          onPressed: () {
+                            if (groupNameController.text.isEmpty ||
+                                _image == null) {
+                              return alertUser(
+                                  context: context,
+                                  alertText: "Add Group Image and Name");
+                            }
+
+                            setState(() {
+                              next = !next;
+                            });
+                          },
+                        ),
                       ),
-                    ),
-                  )
-                : Container(),
-            // Tags
-            multipleAddInputComp(
-              controller: groupTagController,
-              hintText: "#Tags",
-              onPressed: () => addItemToList("tags"),
-            ),
-            const SizedBox(height: 30),
-
-            // lodder component
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: sendinglodingComp(
-                loading: loading,
-                loadderText: "Creating group wait...",
-                btnText: "Create Group",
-                onPressed: () => createGroup(),
-              ),
-            ),
-
-            const SizedBox(height: 30),
+                    ],
+                  ),
           ],
         ),
       ),

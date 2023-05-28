@@ -2,7 +2,6 @@ import 'dart:convert';
 
 class PostModel {
   String postImage;
-  List<String> tags;
   String groupName;
   List<String> likes;
   String posterId;
@@ -11,7 +10,6 @@ class PostModel {
   DateTime postedAt;
   PostModel({
     required this.postImage,
-    required this.tags,
     required this.groupName,
     required this.likes,
     required this.posterId,
@@ -23,7 +21,6 @@ class PostModel {
   Map<String, dynamic> toMap() {
     return {
       'postImage': postImage,
-      'tags': tags,
       'groupName': groupName,
       'likes': likes,
       'posterId': posterId,
@@ -36,7 +33,6 @@ class PostModel {
   factory PostModel.fromMap(Map<String, dynamic> map) {
     return PostModel(
       postImage: map['postImage'] ?? '',
-      tags: List<String>.from(map['tags']),
       groupName: map['groupName'] ?? '',
       likes: List<String>.from(map['likes']),
       posterId: map['posterId'] ?? '',

@@ -1,23 +1,54 @@
 // ignore_for_file: must_be_immutable
 
 import 'package:flutter/material.dart';
+import 'package:memoryapp/firebase/fb_firestore.dart';
 import 'package:memoryapp/models/post_model.dart';
 import 'package:memoryapp/models/user_model.dart';
+import 'package:memoryapp/provider/user_provider.dart';
+import 'package:memoryapp/screens/comment.dart';
 import 'package:memoryapp/utils/app_colors.dart';
 import 'package:memoryapp/widgets/text_comp.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-class SinglePostComp extends StatelessWidget {
+class SinglePostComp extends StatefulWidget {
   PostModel postData;
   String postId;
 
   SinglePostComp({super.key, required this.postData, required this.postId});
 
   @override
+  State<SinglePostComp> createState() => _SinglePostCompState();
+}
+
+class _SinglePostCompState extends State<SinglePostComp> {
+  likePost() {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    var user = userProvider.user;
+
+    var likesArry = widget.postData.likes;
+    var isLikedAlready = likesArry.contains(user.id);
+
+    if (isLikedAlready) {
+      likesArry.remove(user.id);
+      likeFbPost(
+          data: {"likes": likesArry}, context: context, docId: widget.postId);
+    } else {
+      likesArry.add(user.id);
+      likeFbPost(
+          data: {"likes": likesArry}, context: context, docId: widget.postId);
+    }
+
+    // print(isLikedAlready);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
       color: AppColors.whiteColor,
-      padding: const EdgeInsets.only(bottom: 10),
+      margin: const EdgeInsets.only(bottom: 15),
+      padding: const EdgeInsets.only(bottom: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -25,14 +56,14 @@ class SinglePostComp extends StatelessWidget {
           StreamBuilder(
             stream: FirebaseFirestore.instance
                 .collection("users")
-                .doc(postData.posterId)
+                .doc(widget.postData.posterId)
                 .snapshots(),
             builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
+              // if (snapshot.connectionState == ConnectionState.waiting) {
+              //   return const Center(
+              //     child: CircularProgressIndicator(),
+              //   );
+              // }
 
               if (snapshot.hasData) {
                 // UserModel userData;
@@ -48,8 +79,8 @@ class SinglePostComp extends StatelessWidget {
                         borderRadius: BorderRadius.circular(100),
                         child: Image.network(
                           userData.profilePic,
-                          width: 50,
-                          height: 50,
+                          width: 40,
+                          height: 40,
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -57,13 +88,15 @@ class SinglePostComp extends StatelessWidget {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          TextComp(text: userData.username),
-                          const SizedBox(height: 2),
+                          TextComp(
+                            text: userData.username,
+                            size: 14,
+                          ),
                           TextComp(
                             text: "1h",
                             color: AppColors.greyColor,
                             fontweight: FontWeight.normal,
-                            size: 13,
+                            size: 11,
                           ),
                         ],
                       ),
@@ -80,7 +113,7 @@ class SinglePostComp extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12),
             child: TextComp(
-              text: postData.description,
+              text: widget.postData.description,
               fontweight: FontWeight.normal,
               size: 16,
               // color: AppColors.greyColor,
@@ -91,65 +124,62 @@ class SinglePostComp extends StatelessWidget {
 
           // post image
           Image.network(
-            postData.postImage,
+            widget.postData.postImage,
             width: double.infinity,
-            height: 200,
+            height: 250,
             fit: BoxFit.cover,
           ),
 
-          const SizedBox(height: 10),
-          // post tag
-          Container(
-            height: postData.tags.length > 3 ? 60 : 40,
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: GridView.builder(
-              physics: const ClampingScrollPhysics(),
-              shrinkWrap: true,
-              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                  maxCrossAxisExtent: 110, mainAxisExtent: 35),
-              itemCount: postData.tags.length,
-              itemBuilder: (context, index) {
-                return InkWell(
-                  onTap: () {},
-                  child: Container(
-                    margin: const EdgeInsets.only(right: 5),
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 3, horizontal: 5),
-                    decoration: const BoxDecoration(
-                      color: AppColors.lightGrey,
-                    ),
-                    child: Center(
-                      child: TextComp(
-                        text: postData.tags[index],
-                        size: 14,
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-
-          const SizedBox(height: 10),
+          const SizedBox(height: 15),
 
           // like/comment/share icon container
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 15),
             child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                iconComp(
-                  icon: Icons.favorite,
-                  onPressed: () {},
+                Expanded(
+                  child: TextComp(
+                    text: "${widget.postData.likes.length} Like",
+                    size: 14,
+                    fontweight: FontWeight.normal,
+                  ),
                 ),
-                iconComp(
-                  icon: Icons.message,
-                  onPressed: () {},
+                InkWell(
+                  onTap: () => likePost(),
+                  child: Icon(
+                    Icons.favorite,
+                    size: 22,
+                    color: widget.postData.likes
+                            .contains(FirebaseAuth.instance.currentUser!.uid)
+                        ? Colors.red
+                        : AppColors.black,
+                  ),
                 ),
-                iconComp(
-                  icon: Icons.ios_share,
-                  onPressed: () {},
+                const SizedBox(width: 10),
+                Row(
+                  children: [
+                    TextComp(
+                      text: "0",
+                      size: 16,
+                      fontweight: FontWeight.normal,
+                    ),
+                    const SizedBox(width: 5),
+                    InkWell(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => CommentScreen(
+                                postId: widget.postId,
+                              ),
+                            ));
+                      },
+                      child: const Icon(
+                        Icons.message,
+                        size: 22,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -158,24 +188,4 @@ class SinglePostComp extends StatelessWidget {
       ),
     );
   }
-
-  Widget iconComp({
-    required IconData icon,
-    required Function()? onPressed,
-  }) =>
-      Container(
-        width: 100,
-        height: 35,
-        decoration: BoxDecoration(
-            color: AppColors.lightGrey,
-            borderRadius: BorderRadius.circular(20)),
-        child: Center(
-          child: IconButton(
-              onPressed: onPressed,
-              icon: Icon(
-                icon,
-                size: 20,
-              )),
-        ),
-      );
 }
