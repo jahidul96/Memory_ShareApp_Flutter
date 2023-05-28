@@ -49,7 +49,6 @@ likeFbPost({
 }
 
 // create a new group
-
 addingDataInFbCollection({
   required data,
   required BuildContext context,
@@ -60,5 +59,37 @@ addingDataInFbCollection({
     FirebaseFirestore.instance.collection(collectionName).add(data);
   } catch (e) {
     return alertUser(context: context, alertText: errorText);
+  }
+}
+
+// comment
+addCommentFb({
+  required data,
+  required BuildContext context,
+  required String docId,
+  required String errorText,
+}) {
+  try {
+    FirebaseFirestore.instance
+        .collection("allposts")
+        .doc(docId)
+        .collection("comments")
+        .add(data);
+  } catch (e) {
+    return alertUser(context: context, alertText: errorText);
+  }
+}
+
+// updateCommentCount
+
+updateCommentCount({
+  required data,
+  required BuildContext context,
+  required String docId,
+}) async {
+  try {
+    FirebaseFirestore.instance.collection("allposts").doc(docId).update(data);
+  } catch (e) {
+    return alertUser(context: context, alertText: "Data update problem");
   }
 }

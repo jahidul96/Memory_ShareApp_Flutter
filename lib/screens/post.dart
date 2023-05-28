@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:memoryapp/firebase/fb_firestore.dart';
 import 'package:memoryapp/firebase/fb_storage.dart';
 import 'package:memoryapp/models/post_model.dart';
-import 'package:memoryapp/models/simple_models.dart';
+import 'package:memoryapp/models/group_info.dart';
 import 'package:memoryapp/provider/user_provider.dart';
 import 'package:memoryapp/screens/home.dart';
 import 'package:memoryapp/utils/app_colors.dart';
@@ -77,13 +77,14 @@ class _PostScreenState extends State<PostScreen> {
           image: _image!, imagePath: imagePath, context: context);
 
       var postData = PostModel(
-          postImage: url,
-          description: descTextController.text,
-          groupId: selectedGroup.groupId,
-          postedAt: DateTime.now(),
-          groupName: selectedGroup.groupName,
-          likes: [],
-          posterId: user.id);
+        postImage: url,
+        description: descTextController.text,
+        groupId: selectedGroup.groupId,
+        postedAt: DateTime.now(),
+        groupName: selectedGroup.groupName,
+        likes: [],
+        posterId: user.id,
+      );
 
       addingDataInFbCollection(
           data: postData.toMap(),

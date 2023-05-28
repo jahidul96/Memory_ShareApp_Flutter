@@ -156,30 +156,20 @@ class _SinglePostCompState extends State<SinglePostComp> {
                   ),
                 ),
                 const SizedBox(width: 10),
-                Row(
-                  children: [
-                    TextComp(
-                      text: "0",
-                      size: 16,
-                      fontweight: FontWeight.normal,
-                    ),
-                    const SizedBox(width: 5),
-                    InkWell(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => CommentScreen(
-                                postId: widget.postId,
-                              ),
-                            ));
-                      },
-                      child: const Icon(
-                        Icons.message,
-                        size: 22,
-                      ),
-                    ),
-                  ],
+                InkWell(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CommentScreen(
+                            postId: widget.postId,
+                          ),
+                        ));
+                  },
+                  child: const Icon(
+                    Icons.message,
+                    size: 22,
+                  ),
                 ),
               ],
             ),

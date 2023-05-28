@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:memoryapp/models/group_model.dart';
 import 'package:memoryapp/models/post_model.dart';
-import 'package:memoryapp/models/simple_models.dart';
+import 'package:memoryapp/models/group_info.dart';
 import 'package:memoryapp/models/user_model.dart';
 import 'package:memoryapp/provider/user_provider.dart';
 import 'package:memoryapp/screens/group/create_group.dart';

@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:memoryapp/models/simple_models.dart';
+import 'package:memoryapp/models/group_info.dart';
 import 'package:memoryapp/utils/app_colors.dart';
 import 'package:memoryapp/widgets/custome_button.dart';
 import 'package:memoryapp/widgets/text_comp.dart';
