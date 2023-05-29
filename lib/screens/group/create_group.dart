@@ -80,11 +80,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
           adminId: user.id,
           creatorName: user.username);
 
-      addingDataInFbCollection(
-          data: groupData.toMap(),
-          collectionName: "groups",
-          errorText: "Creating group error",
-          context: context);
+      addNewGroup(data: groupData.toMap(), context: context);
       setState(() {
         loading = false;
       });

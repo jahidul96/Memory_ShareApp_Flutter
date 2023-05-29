@@ -86,11 +86,7 @@ class _PostScreenState extends State<PostScreen> {
         posterId: user.id,
       );
 
-      addingDataInFbCollection(
-          data: postData.toMap(),
-          collectionName: "allposts",
-          errorText: "Creating group error",
-          context: context);
+      addPost(data: postData.toMap(), context: context);
       setState(() {
         loading = false;
       });

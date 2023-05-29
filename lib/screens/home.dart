@@ -32,9 +32,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   UserModel userData =
       UserModel(profilePic: "", id: "", email: "", username: "");
-
   List<GroupInfo> groupList = [];
-
   int groupIndex = 0;
 
   @override
@@ -43,6 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
     getUserData();
   }
 
+// get user data and grplist
   getUserData() async {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
 
@@ -75,9 +74,21 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  // getMyGroups(){
-  //   FirebaseFirestore.instance.collection("groups").where(field)
-  // }
+// goToGrpDetails function
+  goToGrpDetails() {
+    if (groupList.isEmpty) {
+      return alertUser(
+          context: context, alertText: "First create a group kindly!");
+    }
+
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => SingleGroupDeatail(
+            groupInfo: groupList[groupIndex],
+          ),
+        ));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -91,22 +102,16 @@ class _HomeScreenState extends State<HomeScreen> {
           title: TextComp(
             text: groupList.isEmpty
                 ? "Memory App"
-                : groupList[groupIndex].groupName,
+                : groupList[groupIndex].groupName.length > 10
+                    ? "${groupList[groupIndex].groupName.substring(0, 10)}..."
+                    : groupList[groupIndex].groupName,
             size: 22,
             color: AppColors.whiteColor,
           ),
           centerTitle: true,
           actions: [
             IconButton(
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => SingleGroupDeatail(
-                        groupInfo: groupList[groupIndex],
-                      ),
-                    ));
-              },
+              onPressed: () => goToGrpDetails(),
               icon: const Icon(
                 Icons.person,
                 size: 30,
@@ -118,14 +123,14 @@ class _HomeScreenState extends State<HomeScreen> {
         // body content
         body: Column(
           children: [
-            // Tabs Bar
+            // Tabs Bar component
             Container(
               decoration: const BoxDecoration(
                 border: Border(
                   bottom: BorderSide(color: AppColors.lightGrey, width: 1),
                 ),
               ),
-              height: 55,
+              height: 58,
               width: double.infinity,
               child: const TabBar(
                 dividerColor: AppColors.black,
@@ -135,7 +140,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 indicatorColor: AppColors.black,
                 labelStyle: TextStyle(fontWeight: FontWeight.bold),
                 unselectedLabelStyle:
-                    TextStyle(fontWeight: FontWeight.normal, fontSize: 16),
+                    TextStyle(fontWeight: FontWeight.normal, fontSize: 18),
                 tabs: [
                   Text("Timeline"),
                   Text("Groups"),
@@ -147,8 +152,19 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   // timeline tab content
                   groupList.isEmpty
-                      ? const Center(
-                          child: CircularProgressIndicator(),
+                      ? Center(
+                          child: Center(
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 50),
+                              child: TextComp(
+                                text: "No Group Till now create some!",
+                                align: TextAlign.center,
+                                size: 20,
+                                fontweight: FontWeight.normal,
+                              ),
+                            ),
+                          ),
                         )
                       : StreamBuilder(
                           stream: FirebaseFirestore.instance
@@ -285,6 +301,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 text: "Add Memory",
                 height: 60,
                 onPressed: () {
+                  if (groupList.isEmpty) {
+                    return alertUser(
+                        context: context,
+                        alertText: "First create a group kindly!");
+                  }
                   Navigator.push(
                       context,
                       MaterialPageRoute(

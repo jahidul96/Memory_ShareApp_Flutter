@@ -61,6 +61,54 @@ Widget addMemberBtn(
       ),
     );
 
+Widget emailProfile({
+  required String email,
+}) =>
+    Container(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      decoration: const BoxDecoration(
+        border: Border(
+          bottom: BorderSide(color: AppColors.lightGrey, width: 1),
+        ),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 35,
+            height: 35,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(25),
+              color: AppColors.greyColor,
+            ),
+            child: Center(
+              child: TextComp(
+                text: email.substring(0, 1).toUpperCase(),
+                color: AppColors.whiteColor,
+                size: 15,
+              ),
+            ),
+          ),
+          const SizedBox(
+            width: 10,
+          ),
+          Expanded(
+            child: TextComp(
+              text: email.length > 15 ? "${email.substring(0, 14)}..." : email,
+              fontweight: FontWeight.normal,
+              size: 15,
+            ),
+          ),
+          // widget.groupInfo.adminId == FirebaseAuth.instance.currentUser!.uid
+          //     ? TextComp(
+          //         text: "owner",
+          //         fontweight: FontWeight.normal,
+          //         color: AppColors.greyColor,
+          //       )
+          //     : Container(),
+        ],
+      ),
+    );
+
 Widget groupListTile({
   required GroupInfo groupInfo,
   required Function()? onTap,

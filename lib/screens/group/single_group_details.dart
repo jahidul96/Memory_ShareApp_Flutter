@@ -1,4 +1,4 @@
-// ignore_for_file: must_be_immutable
+// ignore_for_file: must_be_immutable, use_build_context_synchronously
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +8,7 @@ import 'package:memoryapp/models/group_model.dart';
 import 'package:memoryapp/screens/group/add_new_members.dart';
 import 'package:memoryapp/screens/home.dart';
 import 'package:memoryapp/utils/app_colors.dart';
+import 'package:memoryapp/widgets/confirmation_dialoge_model.dart';
 import 'package:memoryapp/widgets/custome_button.dart';
 import 'package:memoryapp/widgets/simple_reuseable_widgets.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -28,6 +29,27 @@ class SingleGroupDeatail extends StatefulWidget {
 
 class _SingleGroupDeatailState extends State<SingleGroupDeatail> {
   TextEditingController groupNameController = TextEditingController();
+  bool loading = false;
+
+// delete group
+  deleteGroup() async {
+    setState(() {
+      loading = true;
+    });
+    Navigator.pop(context);
+    try {
+      await deletePostComment(widget.groupInfo.groupId);
+      await deleteThisGroupPost(widget.groupInfo.groupId);
+      await deleteGroupFb(widget.groupInfo.groupId);
+      Navigator.pushNamed(context, HomeScreen.routeName);
+    } catch (e) {
+      setState(() {
+        loading = false;
+      });
+      Navigator.pop(context);
+      return alertUser(context: context, alertText: "something went wrong");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,110 +78,130 @@ class _SingleGroupDeatailState extends State<SingleGroupDeatail> {
           ),
         ),
       ),
-      body: StreamBuilder(
-        stream: FirebaseFirestore.instance
-            .collection("groups")
-            .doc(widget.groupInfo.groupId)
-            .snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-
-          if (snapshot.hasData) {
-            var data = snapshot.data!.data() as Map<String, dynamic>;
-
-            GroupModel singlegroupData = GroupModel.fromMap(data);
-            return Column(
+      body: loading
+          ? Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // top container
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        // group name and member number
-                        groupNameAndMemberCounter(
-                            groupName: singlegroupData.groupName,
-                            memberCount:
-                                singlegroupData.groupMember.length.toString()),
+                const Center(
+                  child: CircularProgressIndicator(),
+                ),
+                const SizedBox(height: 10),
+                TextComp(text: "Deleting"),
+              ],
+            )
+          : StreamBuilder(
+              stream: FirebaseFirestore.instance
+                  .collection("groups")
+                  .doc(widget.groupInfo.groupId)
+                  .snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
 
-                        const SizedBox(height: 30),
+                if (snapshot.hasData) {
+                  var data = snapshot.data!.data() as Map<String, dynamic>;
 
-                        Container(
-                          color: AppColors.whiteColor,
-                          padding: const EdgeInsets.symmetric(horizontal: 15),
+                  GroupModel singlegroupData = GroupModel.fromMap(data);
+                  return Column(
+                    children: [
+                      // top container
+                      Expanded(
+                        child: SingleChildScrollView(
                           child: Column(
                             children: [
-                              // add members button
-                              addMemberBtn(
-                                  iconData: Icons.add,
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            AddNewMemberScreen(
-                                                groupData: singlegroupData,
-                                                groupId:
-                                                    widget.groupInfo.groupId),
-                                      ),
-                                    );
-                                  },
-                                  text: "Add Member"),
+                              // group name and member number
+                              groupNameAndMemberCounter(
+                                  groupName: singlegroupData.groupName,
+                                  memberCount: singlegroupData
+                                      .groupMember.length
+                                      .toString()),
 
-                              const Divider(
-                                height: 5,
-                              ),
-                              // members email profile
-                              ListView.builder(
-                                shrinkWrap: true,
-                                physics: const ClampingScrollPhysics(),
-                                itemCount: singlegroupData.groupMember.length,
-                                itemBuilder: (context, index) {
-                                  return emailProfile(
-                                    email: singlegroupData.groupMember[index]
-                                        .toString(),
-                                  );
-                                },
-                              ),
+                              const SizedBox(height: 30),
 
-                              // edit groupName
+                              Container(
+                                color: AppColors.whiteColor,
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 15),
+                                child: Column(
+                                  children: [
+                                    // add members button
+                                    addMemberBtn(
+                                        iconData: Icons.add,
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  AddNewMemberScreen(
+                                                      groupData:
+                                                          singlegroupData,
+                                                      groupId: widget
+                                                          .groupInfo.groupId),
+                                            ),
+                                          );
+                                        },
+                                        text: "Add Member"),
 
-                              addMemberBtn(
-                                  iconData: Icons.edit,
-                                  onTap: () => editGroupName(),
-                                  text: "Edit group name"),
+                                    const Divider(
+                                      height: 5,
+                                    ),
+                                    // members email profile
+                                    ListView.builder(
+                                      shrinkWrap: true,
+                                      physics: const ClampingScrollPhysics(),
+                                      itemCount:
+                                          singlegroupData.groupMember.length,
+                                      itemBuilder: (context, index) {
+                                        return emailProfile(
+                                          email: singlegroupData
+                                              .groupMember[index]
+                                              .toString(),
+                                        );
+                                      },
+                                    ),
+
+                                    // edit groupName
+
+                                    addMemberBtn(
+                                        iconData: Icons.edit,
+                                        onTap: () => editGroupName(),
+                                        text: "Edit group name"),
+                                  ],
+                                ),
+                              )
                             ],
                           ),
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-
-                // delete group btn
-
-                widget.groupInfo.adminId ==
-                        FirebaseAuth.instance.currentUser!.uid
-                    ? Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: CustomButton(
-                          text: "Delete group",
-                          onPressed: () {},
                         ),
-                      )
-                    : Container()
-              ],
-            );
-          }
+                      ),
 
-          return Center(
-            child: TextComp(text: "Something went wrong!"),
-          );
-        },
-      ),
+                      // delete group btn
+
+                      widget.groupInfo.adminId ==
+                              FirebaseAuth.instance.currentUser!.uid
+                          ? Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: CustomButton(
+                                text: "Delete group",
+                                onPressed: () => confirmModel(
+                                    context: context,
+                                    confirmFunc: () => deleteGroup(),
+                                    infoText: "Sure you want to delete ?"),
+                              ),
+                            )
+                          : Container()
+                    ],
+                  );
+                }
+
+                return Center(
+                  child: TextComp(text: "Something went wrong!"),
+                );
+              },
+            ),
     );
   }
 
@@ -217,53 +259,4 @@ class _SingleGroupDeatailState extends State<SingleGroupDeatail> {
       },
     );
   }
-
-  Widget emailProfile({
-    required String email,
-  }) =>
-      Container(
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        decoration: const BoxDecoration(
-          border: Border(
-            bottom: BorderSide(color: AppColors.lightGrey, width: 1),
-          ),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 35,
-              height: 35,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(25),
-                color: AppColors.greyColor,
-              ),
-              child: Center(
-                child: TextComp(
-                  text: email.substring(0, 1).toUpperCase(),
-                  color: AppColors.whiteColor,
-                  size: 15,
-                ),
-              ),
-            ),
-            const SizedBox(
-              width: 10,
-            ),
-            Expanded(
-              child: TextComp(
-                text:
-                    email.length > 15 ? "${email.substring(0, 14)}..." : email,
-                fontweight: FontWeight.normal,
-                size: 15,
-              ),
-            ),
-            widget.groupInfo.adminId == FirebaseAuth.instance.currentUser!.uid
-                ? TextComp(
-                    text: "owner",
-                    fontweight: FontWeight.normal,
-                    color: AppColors.greyColor,
-                  )
-                : Container(),
-          ],
-        ),
-      );
 }

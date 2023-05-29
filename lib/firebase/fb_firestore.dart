@@ -49,16 +49,25 @@ likeFbPost({
 }
 
 // create a new group
-addingDataInFbCollection({
+addNewGroup({
   required data,
   required BuildContext context,
-  required String collectionName,
-  required String errorText,
 }) {
   try {
-    FirebaseFirestore.instance.collection(collectionName).add(data);
+    FirebaseFirestore.instance.collection("groups").add(data);
   } catch (e) {
-    return alertUser(context: context, alertText: errorText);
+    return alertUser(context: context, alertText: "Something went wrong!");
+  }
+}
+
+addPost({
+  required data,
+  required BuildContext context,
+}) {
+  try {
+    FirebaseFirestore.instance.collection("allposts").add(data);
+  } catch (e) {
+    return alertUser(context: context, alertText: "Something went wrong!");
   }
 }
 
@@ -104,4 +113,51 @@ editGroupFb({
   } catch (e) {
     return alertUser(context: context, alertText: "Data update problem");
   }
+}
+
+// delete group post comments
+deletePostComment(String groupId) async {
+  var data = await FirebaseFirestore.instance
+      .collection("allposts")
+      .where("groupId", isEqualTo: groupId)
+      .get();
+
+  for (var doc in data.docs) {
+    FirebaseFirestore.instance
+        .collection("allposts")
+        .doc(doc.id)
+        .collection("comments")
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      for (var commentDoc in querySnapshot.docs) {
+        FirebaseFirestore.instance
+            .collection("allposts")
+            .doc(doc.id)
+            .collection("comments")
+            .doc(commentDoc.id)
+            .delete();
+      }
+    });
+  }
+}
+
+// searchAllPost of a group and delete
+deleteThisGroupPost(
+  String groupId,
+) async {
+  var allpost = await FirebaseFirestore.instance
+      .collection("allposts")
+      .where("groupId", isEqualTo: groupId)
+      .get();
+  for (var doc in allpost.docs) {
+    await FirebaseFirestore.instance
+        .collection("allposts")
+        .doc(doc.id)
+        .delete();
+  }
+}
+
+// delete whole group
+deleteGroupFb(String id) async {
+  await FirebaseFirestore.instance.collection("groups").doc(id).delete();
 }
