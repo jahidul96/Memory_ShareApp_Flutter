@@ -1,10 +1,8 @@
 // ignore_for_file: prefer_const_constructors_in_immutables, use_build_context_synchronously, depend_on_referenced_packages, must_be_immutable
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:memoryapp/firebase/auth_fb.dart';
 import 'package:memoryapp/firebase/fb_firestore.dart';
 import 'package:memoryapp/firebase/fb_storage.dart';
-import 'package:memoryapp/models/user_model.dart';
 import 'package:memoryapp/provider/user_provider.dart';
 import 'package:memoryapp/utils/app_colors.dart';
 import 'package:memoryapp/widgets/confirmation_dialoge_model.dart';
@@ -60,20 +58,18 @@ class _EditProfileInfoState extends State<EditProfileInfo> {
       var url = await uploadFile(
           image: _image!, imagePath: imagePath, context: context);
 
-      var data = UserModel(
-          profilePic: url,
-          id: user.id,
-          email: user.email,
-          username: user.username);
+      user.profilePic = url;
 
       if (usernameController.text.isEmpty) {
-        updateUserInfoFb(data: data.toMap(), context: context);
-        userProvider.setUser(data);
+        updateUserInfoFb(data: {"profilePic": url}, context: context);
+        userProvider.setUser(user);
       } else {
-        data.username = usernameController.text;
+        user.username = usernameController.text;
 
-        updateUserInfoFb(data: data.toMap(), context: context);
-        userProvider.setUser(data);
+        updateUserInfoFb(
+            data: {"profilePic": url, "username": usernameController.text},
+            context: context);
+        userProvider.setUser(user);
       }
       setState(() {
         loading = false;

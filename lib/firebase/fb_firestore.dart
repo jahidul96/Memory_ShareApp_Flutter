@@ -29,7 +29,7 @@ updateUserInfoFb({
     FirebaseFirestore.instance
         .collection("users")
         .doc(FirebaseAuth.instance.currentUser!.uid)
-        .set(data);
+        .update(data);
   } catch (e) {
     return alertUser(context: context, alertText: "Data update problem");
   }
@@ -81,7 +81,6 @@ addCommentFb({
 }
 
 // updateCommentCount
-
 updateCommentCount({
   required data,
   required BuildContext context,
@@ -89,6 +88,19 @@ updateCommentCount({
 }) async {
   try {
     FirebaseFirestore.instance.collection("allposts").doc(docId).update(data);
+  } catch (e) {
+    return alertUser(context: context, alertText: "Data update problem");
+  }
+}
+
+// updateCommentCount
+editGroupFb({
+  required data,
+  required BuildContext context,
+  required String docId,
+}) async {
+  try {
+    FirebaseFirestore.instance.collection("groups").doc(docId).update(data);
   } catch (e) {
     return alertUser(context: context, alertText: "Data update problem");
   }

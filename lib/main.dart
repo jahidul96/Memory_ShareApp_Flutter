@@ -5,7 +5,6 @@ import 'package:memoryapp/screens/auth/auth_check.dart';
 import 'package:memoryapp/screens/auth/register.dart';
 import 'package:memoryapp/screens/auth/login.dart';
 import 'package:memoryapp/screens/group/create_group.dart';
-import 'package:memoryapp/screens/group/single_group_details.dart';
 import 'package:memoryapp/screens/home.dart';
 import 'package:memoryapp/screens/profile/profile.dart';
 import 'package:provider/provider.dart';
@@ -30,7 +29,7 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Flutter Demo',
+        title: 'Memory App',
         theme: ThemeData.light(),
         routes: {
           AuthCheckScreen.routeName: (context) => const AuthCheckScreen(),
@@ -38,7 +37,6 @@ class MyApp extends StatelessWidget {
           RegisterScreen.routeName: (context) => const RegisterScreen(),
           LoginScreen.routeName: (context) => const LoginScreen(),
           ProfileScreen.routeName: (context) => const ProfileScreen(),
-          SingleGroupDeatail.routeName: (context) => const SingleGroupDeatail(),
           CreateGroupScreen.routeName: (context) => const CreateGroupScreen(),
         },
         home: const AuthCheckScreen(),

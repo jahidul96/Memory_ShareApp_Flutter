@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:memoryapp/models/user_model.dart';
 import 'package:memoryapp/screens/auth/auth_check.dart';
 import 'package:memoryapp/widgets/confirmation_dialoge_model.dart';
 
@@ -18,17 +19,16 @@ void registerUser(
       password: password,
     );
 
-    Map<String, dynamic> userData = {
-      "username": username.toLowerCase(),
-      "email": email.toLowerCase(),
-      "id": credential.user!.uid,
-      "profilePic": profileUrl,
-    };
+    var userData = UserModel(
+        profilePic: profileUrl,
+        id: credential.user!.uid,
+        email: email,
+        username: username);
 
     FirebaseFirestore.instance
         .collection("users")
         .doc(credential.user!.uid)
-        .set(userData)
+        .set(userData.toMap())
         .then(
       (value) {
         Navigator.pushNamed(context, AuthCheckScreen.routeName);

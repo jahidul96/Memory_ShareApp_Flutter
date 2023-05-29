@@ -99,7 +99,13 @@ class _HomeScreenState extends State<HomeScreen> {
           actions: [
             IconButton(
               onPressed: () {
-                Navigator.pushNamed(context, SingleGroupDeatail.routeName);
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => SingleGroupDeatail(
+                        groupInfo: groupList[groupIndex],
+                      ),
+                    ));
               },
               icon: const Icon(
                 Icons.person,
@@ -151,6 +157,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   isEqualTo: groupList[groupIndex].groupId)
                               .snapshots(),
                           builder: (context, snapshot) {
+                            // connecting state
                             if (snapshot.connectionState ==
                                 ConnectionState.waiting) {
                               return const Center(
@@ -158,6 +165,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               );
                             }
 
+                            // if no data is in collection
                             if (snapshot.data!.docs.length == 0) {
                               return Center(
                                 child: Padding(
@@ -174,11 +182,11 @@ class _HomeScreenState extends State<HomeScreen> {
                               );
                             }
 
+                            // data show to the ui
                             if (snapshot.hasData) {
+                              var data = snapshot.data!.docs;
                               List<PostModel> selectedGroupPosts = [];
                               var selectedGroupIds = [];
-                              var data = snapshot.data!.docs;
-
                               for (var element in data) {
                                 selectedGroupPosts
                                     .add(PostModel.fromMap(element.data()));
@@ -195,6 +203,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 },
                               );
                             }
+
+                            // empty content
                             return Center(
                               child: Padding(
                                 padding:
