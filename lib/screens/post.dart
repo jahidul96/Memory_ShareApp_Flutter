@@ -17,9 +17,17 @@ import 'package:path/path.dart' as p;
 import 'package:provider/provider.dart';
 
 class PostScreen extends StatefulWidget {
-  List<GroupInfo> groupList;
+  List<GroupInfo>? groupList;
+  bool canSelectGroup;
+  String? groupId;
+  String? groupName;
   static const routeName = "PostScreen";
-  PostScreen({super.key, required this.groupList});
+  PostScreen(
+      {super.key,
+      this.groupList,
+      required this.canSelectGroup,
+      this.groupId,
+      this.groupName});
 
   @override
   State<PostScreen> createState() => _PostScreenState();
@@ -58,10 +66,17 @@ class _PostScreenState extends State<PostScreen> {
   postData() async {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     final user = userProvider.user;
-    if (_image == null ||
-        selectedGroup.groupName == " " ||
-        descTextController.text.isEmpty) {
-      return alertUser(context: context, alertText: "Fill all the field's");
+
+    if (!widget.canSelectGroup) {
+      if (_image == null || descTextController.text.isEmpty) {
+        return alertUser(context: context, alertText: "Fill all the field's");
+      } else {
+        if (_image == null ||
+            selectedGroup.groupName == " " ||
+            descTextController.text.isEmpty) {
+          return alertUser(context: context, alertText: "Fill all the field's");
+        }
+      }
     }
 
     setState(() {
@@ -79,9 +94,11 @@ class _PostScreenState extends State<PostScreen> {
       var postData = PostModel(
         postImage: url,
         description: descTextController.text,
-        groupId: selectedGroup.groupId,
+        groupId:
+            widget.canSelectGroup ? selectedGroup.groupId : widget.groupId!,
         postedAt: DateTime.now(),
-        groupName: selectedGroup.groupName,
+        groupName:
+            widget.canSelectGroup ? selectedGroup.groupName : widget.groupName!,
         likes: [],
         posterId: user.id,
       );
@@ -90,13 +107,27 @@ class _PostScreenState extends State<PostScreen> {
       setState(() {
         loading = false;
       });
-      return callBackAlert(
-        context: context,
-        alertText: "Post done!",
-        onPressed: () {
-          Navigator.pushNamed(context, HomeScreen.routeName);
-        },
-      );
+
+      widget.canSelectGroup
+          ? callBackAlert(
+              context: context,
+              alertText: "Post done!",
+              onPressed: () {
+                Navigator.pushNamed(context, HomeScreen.routeName);
+              },
+            )
+          : callBackAlert(
+              context: context,
+              alertText: "Post done!",
+              onPressed: () {
+                // Navigator.pushNamed(context, HomeScreen.routeName);
+                Navigator.pop(context);
+                descTextController.clear();
+                setState(() {
+                  _image = null;
+                });
+              },
+            );
     } catch (e) {
       setState(() {
         loading = false;
@@ -155,8 +186,11 @@ class _PostScreenState extends State<PostScreen> {
 
             const SizedBox(height: 30),
 
-            // select group from dropdown
-            selectGroup(),
+            widget.canSelectGroup
+                ?
+                // select group from dropdown
+                selectGroup()
+                : Container(),
 
             const SizedBox(height: 30),
 
@@ -216,12 +250,12 @@ class _PostScreenState extends State<PostScreen> {
                   content: SizedBox(
                     height: 250,
                     child: ListView.builder(
-                      itemCount: widget.groupList.length,
+                      itemCount: widget.groupList!.length,
                       itemBuilder: (context, index) {
                         return ListTile(
-                          onTap: () => getGroup(widget.groupList[index]),
-                          title:
-                              TextComp(text: widget.groupList[index].groupName),
+                          onTap: () => getGroup(widget.groupList![index]),
+                          title: TextComp(
+                              text: widget.groupList![index].groupName),
                         );
                       },
                     ),

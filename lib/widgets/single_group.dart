@@ -2,7 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:memoryapp/models/group_model.dart';
-import 'package:memoryapp/widgets/confirmation_dialoge_model.dart';
+import 'package:memoryapp/screens/see_group_post_media.dart';
+import 'package:memoryapp/utils/app_colors.dart';
 import 'package:memoryapp/widgets/text_comp.dart';
 
 class SingleGroup extends StatelessWidget {
@@ -18,7 +19,14 @@ class SingleGroup extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        alertUser(context: context, alertText: groupId);
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => SingleGroupPostAndMediaScreen(
+                groupId: groupId,
+                groupData: groupData,
+              ),
+            ));
       },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -47,10 +55,16 @@ class SingleGroup extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   TextComp(text: groupData.groupName),
+                  // TextComp(
+                  //   text: groupData.creatorName,
+                  //   fontweight: FontWeight.normal,
+                  //   size: 14,
+                  // ),
                   TextComp(
-                    text: groupData.creatorName,
+                    text: "All media an post",
                     fontweight: FontWeight.normal,
                     size: 14,
+                    color: AppColors.greyColor,
                   ),
                 ],
               ),

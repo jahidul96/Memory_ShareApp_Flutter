@@ -48,7 +48,7 @@ class _SinglePostCompState extends State<SinglePostComp> {
     return Container(
       color: AppColors.whiteColor,
       margin: const EdgeInsets.only(bottom: 15),
-      padding: const EdgeInsets.only(bottom: 20),
+      padding: const EdgeInsets.only(bottom: 20, top: 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
