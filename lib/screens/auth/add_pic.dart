@@ -84,42 +84,7 @@ class _AddPicState extends State<AddPic> {
           children: [
             const SizedBox(height: 30),
             imagePickerPlaceholderComp(onTap: getImage, image: _image),
-            // InkWell(
-            //   onTap: () => getImage(),
-            //   child: Center(
-            //     child: _image != null
-            //         ? ClipRRect(
-            //             borderRadius: BorderRadius.circular(100),
-            //             child: Image.file(
-            //               _image!,
-            //               width: 120,
-            //               height: 120,
-            //               fit: BoxFit.cover,
-            //             ),
-            //           )
-            //         : Column(
-            //             children: [
-            //               Container(
-            //                 width: 110,
-            //                 height: 110,
-            //                 decoration: BoxDecoration(
-            //                   borderRadius: BorderRadius.circular(100),
-            //                   color: AppColors.appbarColor,
-            //                 ),
-            //                 child: const Center(
-            //                   child: Icon(
-            //                     Icons.camera_alt,
-            //                     size: 30,
-            //                     color: AppColors.whiteColor,
-            //                   ),
-            //                 ),
-            //               ),
-            //               const SizedBox(height: 8),
-            //               TextComp(text: "Add a profile picture.")
-            //             ],
-            //           ),
-            //   ),
-            // ),
+
             const SizedBox(height: 30),
             // lodder component
             sendinglodingComp(
@@ -128,25 +93,6 @@ class _AddPicState extends State<AddPic> {
               btnText: "Create Account",
               onPressed: () => createAccount(),
             ),
-            // loading
-            //     ? Center(
-            //         child: Column(
-            //           children: [
-            //             const SizedBox(
-            //               height: 40,
-            //             ),
-            //             const CircularProgressIndicator(),
-            //             const SizedBox(
-            //               height: 40,
-            //             ),
-            //             TextComp(text: "Creating Account Wait...")
-            //           ],
-            //         ),
-            //       )
-            //     : CustomButton(
-            //         text: "Create Account",
-            //         onPressed: () => createAccount(),
-            //       ),
           ],
         ),
       ),

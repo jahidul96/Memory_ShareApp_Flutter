@@ -58,6 +58,8 @@ void loginUser(String email, String password, BuildContext context) async {
       alertUser(context: context, alertText: "user-not-found");
     } else if (e.code == 'wrong-password') {
       alertUser(context: context, alertText: "wrong credentials");
+    } else {
+      alertUser(context: context, alertText: "something went wrong");
     }
   }
 }

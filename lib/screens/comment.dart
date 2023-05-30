@@ -80,14 +80,14 @@ class _CommentScreenState extends State<CommentScreen> {
         ),
         automaticallyImplyLeading: true,
       ),
-      body: contentLoading
-          ? loadderWidget()
-          : Consumer<UserProvider>(
-              builder: (context, userProvider, child) {
-                var user = userProvider.user;
-                return Column(
-                  children: [
-                    Expanded(
+      body: Consumer<UserProvider>(
+        builder: (context, userProvider, child) {
+          var user = userProvider.user;
+          return Column(
+            children: [
+              contentLoading
+                  ? Expanded(child: loadderWidget())
+                  : Expanded(
                       child: StreamBuilder(
                         stream: FirebaseFirestore.instance
                             .collection("allposts")
@@ -137,12 +137,12 @@ class _CommentScreenState extends State<CommentScreen> {
                       ),
                     ),
 
-                    // bottom comment content
-                    bottomCommentComp(user: user),
-                  ],
-                );
-              },
-            ),
+              // bottom comment content
+              bottomCommentComp(user: user),
+            ],
+          );
+        },
+      ),
     );
   }
 

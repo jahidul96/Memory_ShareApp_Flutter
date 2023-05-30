@@ -192,7 +192,9 @@ class _PostScreenState extends State<PostScreen> {
                 selectGroup()
                 : Container(),
 
-            const SizedBox(height: 30),
+            widget.canSelectGroup
+                ? const SizedBox(height: 30)
+                : const SizedBox(height: 0),
 
 // description input
             Padding(

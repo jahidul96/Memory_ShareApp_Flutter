@@ -5,12 +5,14 @@ class ContainerTextInput extends StatelessWidget {
   TextEditingController inputController;
   IconData icon;
   String hintText;
+  bool secure;
 
   ContainerTextInput(
       {super.key,
       required this.icon,
       required this.hintText,
-      required this.inputController});
+      required this.inputController,
+      this.secure = false});
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +35,7 @@ class ContainerTextInput extends StatelessWidget {
             const SizedBox(width: 10),
             Expanded(
               child: TextField(
+                obscureText: secure,
                 controller: inputController,
                 decoration: InputDecoration(
                   hintStyle: TextStyle(color: AppColors.greyColor),

@@ -71,6 +71,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               icon: Icons.lock,
               hintText: "Password",
               inputController: passwordController,
+              secure: true,
             ),
             const SizedBox(height: 25),
             CustomButton(
@@ -82,7 +83,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                TextComp(text: "Have an account ?"),
+                TextComp(
+                  text: "Have an account ?",
+                  fontweight: FontWeight.normal,
+                ),
                 const SizedBox(width: 20),
                 InkWell(
                   onTap: () {
@@ -90,7 +94,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   },
                   child: TextComp(
                     text: "Login",
-                    size: 19,
+                    size: 17,
                     color: AppColors.appbarColor,
                   ),
                 ),
