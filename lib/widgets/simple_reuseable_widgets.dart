@@ -7,6 +7,7 @@ import 'package:memoryapp/utils/app_colors.dart';
 import 'package:memoryapp/widgets/custome_button.dart';
 import 'package:memoryapp/widgets/text_comp.dart';
 import 'package:memoryapp/widgets/simple_text_input.dart';
+import 'package:memoryapp/widgets/loadder_widget.dart';
 
 Widget groupNameAndMemberCounter({
   required String groupName,
@@ -232,7 +233,7 @@ Widget sendinglodingComp({
         ? Center(
             child: Column(
               children: [
-                const CircularProgressIndicator(),
+                loadderWidget(),
                 const SizedBox(
                   height: 20,
                 ),

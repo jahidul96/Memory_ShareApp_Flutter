@@ -1,5 +1,7 @@
 // ignore_for_file: must_be_immutable, prefer_is_empty
 
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -10,7 +12,7 @@ import 'package:memoryapp/utils/app_assets.dart';
 import 'package:memoryapp/utils/app_colors.dart';
 import 'package:memoryapp/widgets/single_post.dart';
 import 'package:memoryapp/widgets/text_comp.dart';
-import 'package:intl/intl.dart';
+import 'package:memoryapp/widgets/loadder_widget.dart';
 
 class SingleGroupPostAndMediaScreen extends StatefulWidget {
   String groupId;
@@ -30,7 +32,30 @@ class _SingleGroupPostAndMediaScreenState
     AppAssets.gridImg,
   ];
 
+  bool contentLoading = true;
+
   int selectedIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    timer();
+  }
+
+  timer() {
+    Timer(const Duration(seconds: 2), () {
+      setState(() {
+        contentLoading = false;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    timer();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -104,6 +129,12 @@ class _SingleGroupPostAndMediaScreenState
                   onTap: () {
                     setState(() {
                       selectedIndex = index;
+                      contentLoading = true;
+                    });
+                    Timer(const Duration(seconds: 2), () {
+                      setState(() {
+                        contentLoading = false;
+                      });
                     });
                   },
                   child: SizedBox(
@@ -125,86 +156,88 @@ class _SingleGroupPostAndMediaScreenState
             ),
           ),
 
-          Expanded(
-            child: StreamBuilder(
-              stream: FirebaseFirestore.instance
-                  .collection("allposts")
-                  .where("groupId", isEqualTo: widget.groupId)
-                  .snapshots(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
+          contentLoading
+              ? Expanded(child: loadderWidget())
+              : Expanded(
+                  child: StreamBuilder(
+                    stream: FirebaseFirestore.instance
+                        .collection("allposts")
+                        .where("groupId", isEqualTo: widget.groupId)
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return loadderWidget();
+                      }
 
-                // if no data is in collection
-                if (snapshot.data!.docs.length == 0) {
-                  return Center(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: TextComp(
-                        text: "Welcome, No post Till now create some!",
-                        align: TextAlign.center,
-                        size: 20,
-                        fontweight: FontWeight.normal,
-                      ),
-                    ),
-                  );
-                }
-
-                if (snapshot.hasData) {
-                  var data = snapshot.data!.docs;
-                  List<PostModel> allposts = [];
-                  List<String> postIds = [];
-                  for (var doc in data) {
-                    allposts.add(PostModel.fromMap(doc.data()));
-                    postIds.add(doc.id);
-                  }
-
-                  return selectedIndex == 0
-
-                      // post components
-                      ? ListView.builder(
-                          padding: EdgeInsets.zero,
-                          itemCount: allposts.length,
-                          itemBuilder: (context, index) {
-                            return SinglePostComp(
-                              postData: allposts[index],
-                              postId: postIds[index],
-                            );
-                          },
-                        )
-                      :
-
-                      // media components
-                      GridView.builder(
-                          padding: const EdgeInsets.all(10),
-                          physics: const ClampingScrollPhysics(),
-                          itemCount: allposts.length,
-                          gridDelegate:
-                              SliverGridDelegateWithMaxCrossAxisExtent(
-                                  maxCrossAxisExtent:
-                                      MediaQuery.of(context).size.width / 3,
-                                  mainAxisExtent: 120,
-                                  crossAxisSpacing: 5,
-                                  mainAxisSpacing: 10),
-                          itemBuilder: (context, index) {
-                            return Container(
-                              child: Image.network(
-                                allposts[index].postImage,
-                                width: double.infinity,
-                                height: 120,
-                                fit: BoxFit.cover,
-                              ),
-                            );
-                          },
+                      // if no data is in collection
+                      if (snapshot.data!.docs.length == 0) {
+                        return Center(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            child: TextComp(
+                              text: "Welcome, No post Till now create some!",
+                              align: TextAlign.center,
+                              size: 20,
+                              fontweight: FontWeight.normal,
+                            ),
+                          ),
                         );
-                }
-                return Center(child: TextComp(text: "Something went wrong!"));
-              },
-            ),
-          )
+                      }
+
+                      if (snapshot.hasData) {
+                        var data = snapshot.data!.docs;
+                        List<PostModel> allposts = [];
+                        List<String> postIds = [];
+                        for (var doc in data) {
+                          allposts.add(PostModel.fromMap(doc.data()));
+                          postIds.add(doc.id);
+                        }
+
+                        return selectedIndex == 0
+
+                            // post components
+                            ? ListView.builder(
+                                padding: EdgeInsets.zero,
+                                itemCount: allposts.length,
+                                itemBuilder: (context, index) {
+                                  return SinglePostComp(
+                                    postData: allposts[index],
+                                    postId: postIds[index],
+                                  );
+                                },
+                              )
+                            :
+
+                            // media components
+                            GridView.builder(
+                                padding: const EdgeInsets.all(10),
+                                physics: const ClampingScrollPhysics(),
+                                itemCount: allposts.length,
+                                gridDelegate:
+                                    SliverGridDelegateWithMaxCrossAxisExtent(
+                                        maxCrossAxisExtent:
+                                            MediaQuery.of(context).size.width /
+                                                3,
+                                        mainAxisExtent: 120,
+                                        crossAxisSpacing: 5,
+                                        mainAxisSpacing: 10),
+                                itemBuilder: (context, index) {
+                                  return Container(
+                                    child: Image.network(
+                                      allposts[index].postImage,
+                                      width: double.infinity,
+                                      height: 120,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  );
+                                },
+                              );
+                      }
+                      return Center(
+                          child: TextComp(text: "Something went wrong!"));
+                    },
+                  ),
+                )
 
           // realtime post fetch
         ],

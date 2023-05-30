@@ -89,8 +89,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     );
                   },
                 ),
-                optionComp(text: "Groups", onTap: () {}),
                 optionComp(text: "Password & security", onTap: () {}),
+                optionComp(text: "Privacy policy", onTap: () {}),
+                optionComp(text: "About app", onTap: () {}),
                 optionComp(text: "Delete my account", onTap: () {}),
                 optionComp(
                     text: "Log out",
@@ -125,7 +126,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Expanded(
                 child: TextComp(
                   text: text,
-                  size: 18,
+                  size: 17,
+                  fontweight: FontWeight.normal,
                 ),
               ),
               const Icon(Icons.chevron_right),

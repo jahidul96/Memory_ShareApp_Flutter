@@ -1,5 +1,7 @@
 // ignore_for_file: must_be_immutable, prefer_is_empty
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:memoryapp/firebase/fb_firestore.dart';
 import 'package:memoryapp/models/comment_model.dart';
@@ -11,6 +13,7 @@ import 'package:memoryapp/widgets/text_comp.dart';
 import 'package:memoryapp/widgets/custome_button.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:memoryapp/widgets/loadder_widget.dart';
 
 class CommentScreen extends StatefulWidget {
   String postId;
@@ -22,6 +25,7 @@ class CommentScreen extends StatefulWidget {
 
 class _CommentScreenState extends State<CommentScreen> {
   TextEditingController commentController = TextEditingController();
+  bool contentLoading = true;
 
   commentPost(UserModel user) {
     if (commentController.text.isEmpty) {
@@ -43,6 +47,27 @@ class _CommentScreenState extends State<CommentScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+
+    timer();
+  }
+
+  timer() {
+    Timer(const Duration(seconds: 3), () {
+      setState(() {
+        contentLoading = false;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    timer();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -55,67 +80,69 @@ class _CommentScreenState extends State<CommentScreen> {
         ),
         automaticallyImplyLeading: true,
       ),
-      body: Consumer<UserProvider>(
-        builder: (context, userProvider, child) {
-          var user = userProvider.user;
-          return Column(
-            children: [
-              Expanded(
-                child: StreamBuilder(
-                  stream: FirebaseFirestore.instance
-                      .collection("allposts")
-                      .doc(widget.postId)
-                      .collection("comments")
-                      .orderBy("commentTime", descending: false)
-                      .snapshots(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    }
+      body: contentLoading
+          ? loadderWidget()
+          : Consumer<UserProvider>(
+              builder: (context, userProvider, child) {
+                var user = userProvider.user;
+                return Column(
+                  children: [
+                    Expanded(
+                      child: StreamBuilder(
+                        stream: FirebaseFirestore.instance
+                            .collection("allposts")
+                            .doc(widget.postId)
+                            .collection("comments")
+                            .orderBy("commentTime", descending: false)
+                            .snapshots(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return loadderWidget();
+                          }
 
-                    if (snapshot.data!.docs.length == 0) {
-                      return Center(
-                        child: TextComp(text: "No Comment Till Now"),
-                      );
-                    }
+                          if (snapshot.data!.docs.length == 0) {
+                            return Center(
+                              child: TextComp(text: "No Comment Till Now"),
+                            );
+                          }
 
-                    if (snapshot.hasData) {
-                      List<CommentModel> comments = [];
-                      List<String> commentsId = [];
-                      var data = snapshot.data!.docs;
+                          if (snapshot.hasData) {
+                            List<CommentModel> comments = [];
+                            List<String> commentsId = [];
+                            var data = snapshot.data!.docs;
 
-                      for (var element in data) {
-                        comments.add(CommentModel.fromMap(element.data()));
-                        commentsId.add(element.id);
-                      }
+                            for (var element in data) {
+                              comments
+                                  .add(CommentModel.fromMap(element.data()));
+                              commentsId.add(element.id);
+                            }
 
-                      return ListView.builder(
-                        itemCount: comments.length,
-                        itemBuilder: (context, index) {
-                          return Padding(
-                            padding: const EdgeInsets.only(top: 10),
-                            child: commentComp(
-                                commentData: comments[index],
-                                commentId: commentsId[index]),
+                            return ListView.builder(
+                              itemCount: comments.length,
+                              itemBuilder: (context, index) {
+                                return Padding(
+                                  padding: const EdgeInsets.only(top: 10),
+                                  child: commentComp(
+                                      commentData: comments[index],
+                                      commentId: commentsId[index]),
+                                );
+                              },
+                            );
+                          }
+                          return Center(
+                            child: TextComp(text: "No Comment Till Now"),
                           );
                         },
-                      );
-                    }
-                    return Center(
-                      child: TextComp(text: "No Comment Till Now"),
-                    );
-                  },
-                ),
-              ),
+                      ),
+                    ),
 
-              // bottom comment content
-              bottomCommentComp(user: user),
-            ],
-          );
-        },
-      ),
+                    // bottom comment content
+                    bottomCommentComp(user: user),
+                  ],
+                );
+              },
+            ),
     );
   }
 
