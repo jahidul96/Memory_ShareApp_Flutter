@@ -6,6 +6,7 @@ import 'package:memoryapp/models/post_model.dart';
 import 'package:memoryapp/models/user_model.dart';
 import 'package:memoryapp/provider/user_provider.dart';
 import 'package:memoryapp/screens/comment.dart';
+import 'package:memoryapp/screens/file_download.dart';
 import 'package:memoryapp/utils/app_colors.dart';
 import 'package:memoryapp/widgets/text_comp.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -123,11 +124,21 @@ class _SinglePostCompState extends State<SinglePostComp> {
           const SizedBox(height: 5),
 
           // post image
-          Image.network(
-            widget.postData.postImage,
-            width: double.infinity,
-            height: 250,
-            fit: BoxFit.cover,
+          InkWell(
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        FileDownloadScreen(url: widget.postData.postImage),
+                  ));
+            },
+            child: Image.network(
+              widget.postData.postImage,
+              width: double.infinity,
+              height: 250,
+              fit: BoxFit.cover,
+            ),
           ),
 
           const SizedBox(height: 15),

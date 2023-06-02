@@ -156,34 +156,7 @@ class _PostScreenState extends State<PostScreen> {
             const SizedBox(height: 20),
             // post image/video etc btn
             imagePickerPlaceholderComp(onTap: getImage, image: _image),
-            // Center(
-            //   child: InkWell(
-            //     onTap: () {},
-            //     child: Column(
-            //       children: [
-            //         Container(
-            //           width: 70,
-            //           height: 70,
-            //           decoration: BoxDecoration(
-            //             borderRadius: BorderRadius.circular(45),
-            //             color: AppColors.appbarColor,
-            //           ),
-            //           child: const Icon(
-            //             Icons.folder,
-            //             color: AppColors.whiteColor,
-            //             size: 30,
-            //           ),
-            //         ),
-            //         const SizedBox(height: 6),
-            //         TextComp(
-            //           text: "Upload Img/Video/pdf/audio",
-            //           size: 14,
-            //         ),
-            //       ],
-            //     ),
-            //   ),
-            // ),
-
+           
             const SizedBox(height: 30),
 
             widget.canSelectGroup

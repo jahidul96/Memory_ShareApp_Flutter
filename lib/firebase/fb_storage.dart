@@ -36,3 +36,16 @@ Future pickImage() async {
     // print("error occuer's");
   }
 }
+
+Future pickVideo() async {
+  try {
+    final video = await ImagePicker().pickVideo(
+        source: ImageSource.gallery, maxDuration: const Duration(minutes: 3));
+    if (video == null) return;
+    final tempVideo = File(video.path);
+
+    return tempVideo;
+  } catch (e) {
+    // print("error occuer's");
+  }
+}

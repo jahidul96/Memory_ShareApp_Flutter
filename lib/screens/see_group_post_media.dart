@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:memoryapp/models/group_model.dart';
 import 'package:memoryapp/models/post_model.dart';
+import 'package:memoryapp/screens/file_download.dart';
 import 'package:memoryapp/screens/post.dart';
 import 'package:memoryapp/utils/app_assets.dart';
 import 'package:memoryapp/utils/app_colors.dart';
@@ -222,7 +223,17 @@ class _SingleGroupPostAndMediaScreenState
                                         crossAxisSpacing: 5,
                                         mainAxisSpacing: 10),
                                 itemBuilder: (context, index) {
-                                  return Container(
+                                  return InkWell(
+                                    onTap: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                FileDownloadScreen(
+                                                    url: allposts[index]
+                                                        .postImage),
+                                          ));
+                                    },
                                     child: Image.network(
                                       allposts[index].postImage,
                                       width: double.infinity,

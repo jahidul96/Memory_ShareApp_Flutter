@@ -57,23 +57,12 @@ class _SingleGroupDeatailState extends State<SingleGroupDeatail> {
 
   @override
   void initState() {
-    timer();
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    timer();
-    super.dispose();
-  }
-
-// loading time for content
-  timer() {
     Timer(const Duration(seconds: 2), () {
       setState(() {
         contentLoading = false;
       });
     });
+    super.initState();
   }
 
   @override
