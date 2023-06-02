@@ -7,6 +7,7 @@ class GroupModel {
   String creatorName;
   DateTime createdAt;
   String adminId;
+  int notificationCounter;
   GroupModel({
     required this.groupProfilePic,
     required this.groupName,
@@ -14,6 +15,7 @@ class GroupModel {
     required this.creatorName,
     required this.createdAt,
     required this.adminId,
+    required this.notificationCounter,
   });
 
   Map<String, dynamic> toMap() {
@@ -24,6 +26,7 @@ class GroupModel {
       'creatorName': creatorName,
       'createdAt': createdAt.millisecondsSinceEpoch,
       'adminId': adminId,
+      'notificationCounter': notificationCounter,
     };
   }
 
@@ -35,6 +38,7 @@ class GroupModel {
       creatorName: map['creatorName'] ?? '',
       createdAt: DateTime.fromMillisecondsSinceEpoch(map['createdAt']),
       adminId: map['adminId'] ?? '',
+      notificationCounter: map['notificationCounter']?.toInt() ?? 0,
     );
   }
 

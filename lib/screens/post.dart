@@ -38,8 +38,12 @@ class _PostScreenState extends State<PostScreen> {
   bool loading = false;
   TextEditingController postTagController = TextEditingController();
   TextEditingController descTextController = TextEditingController();
-  GroupInfo selectedGroup =
-      GroupInfo(groupId: "", groupName: "", groupProfilePic: "", adminId: "");
+  GroupInfo selectedGroup = GroupInfo(
+      groupId: "",
+      groupName: "",
+      groupProfilePic: "",
+      adminId: "",
+      notificationCounter: 0);
 
   getImage() async {
     try {
@@ -156,7 +160,7 @@ class _PostScreenState extends State<PostScreen> {
             const SizedBox(height: 20),
             // post image/video etc btn
             imagePickerPlaceholderComp(onTap: getImage, image: _image),
-           
+
             const SizedBox(height: 30),
 
             widget.canSelectGroup

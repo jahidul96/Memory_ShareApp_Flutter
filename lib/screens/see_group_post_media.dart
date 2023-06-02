@@ -39,21 +39,16 @@ class _SingleGroupPostAndMediaScreenState
 
   @override
   void initState() {
-    super.initState();
-    timer();
-  }
-
-  timer() {
     Timer(const Duration(seconds: 2), () {
       setState(() {
         contentLoading = false;
       });
     });
+    super.initState();
   }
 
   @override
   void dispose() {
-    timer();
     super.dispose();
   }
 
@@ -204,6 +199,7 @@ class _SingleGroupPostAndMediaScreenState
                                   return SinglePostComp(
                                     postData: allposts[index],
                                     postId: postIds[index],
+                                    groupId: widget.groupId,
                                   );
                                 },
                               )

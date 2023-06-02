@@ -9,6 +9,7 @@ import 'package:memoryapp/models/group_info.dart';
 import 'package:memoryapp/models/user_model.dart';
 import 'package:memoryapp/provider/user_provider.dart';
 import 'package:memoryapp/screens/group/create_group.dart';
+import 'package:memoryapp/screens/group/group_notifications.dart';
 import 'package:memoryapp/screens/group/single_group_details.dart';
 import 'package:memoryapp/screens/post.dart';
 import 'package:memoryapp/screens/profile/profile.dart';
@@ -78,10 +79,12 @@ class _HomeScreenState extends State<HomeScreen> {
       for (var element in snapshots.docs) {
         groupList.add(
           GroupInfo(
-              adminId: element.data()["adminId"],
-              groupId: element.id,
-              groupName: element.data()["groupName"],
-              groupProfilePic: element.data()["groupProfilePic"]),
+            adminId: element.data()["adminId"],
+            groupId: element.id,
+            groupName: element.data()["groupName"],
+            groupProfilePic: element.data()["groupProfilePic"],
+            notificationCounter: element.data()["notificationCounter"],
+          ),
         );
       }
       setState(() {
@@ -154,7 +157,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             BorderSide(color: AppColors.lightGrey, width: 1),
                       ),
                     ),
-                    height: 58,
+                    height: 55,
                     width: double.infinity,
                     child: const TabBar(
                       dividerColor: AppColors.black,
@@ -167,7 +170,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           fontWeight: FontWeight.normal, fontSize: 18),
                       tabs: [
                         Text("Timeline"),
-                        Text("Groups"),
+                        Text("Albums"),
                       ],
                     ),
                   ),
@@ -192,76 +195,120 @@ class _HomeScreenState extends State<HomeScreen> {
                               )
                             : changingGroup
                                 ? loadderWidget()
-                                : StreamBuilder(
-                                    stream: FirebaseFirestore.instance
-                                        .collection("allposts")
-                                        .where("groupId",
-                                            isEqualTo:
-                                                groupList[groupIndex].groupId)
-                                        .snapshots(),
-                                    builder: (context, snapshot) {
-                                      // connecting state
-                                      if (snapshot.connectionState ==
-                                          ConnectionState.waiting) {
-                                        return loadderWidget();
-                                      }
-
-                                      // if no data is in collection
-                                      if (snapshot.data!.docs.length == 0) {
-                                        return Center(
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 20),
+                                : Column(
+                                    children: [
+                                      // notification button
+                                      InkWell(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  GroupNotificationScreen(
+                                                      groupInfo: groupList[
+                                                          groupIndex]),
+                                            ),
+                                          );
+                                        },
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 10, horizontal: 15),
+                                          color: AppColors.appbarColor,
+                                          child: Center(
                                             child: TextComp(
-                                              text:
-                                                  "Welcome, No post Till now create some!",
-                                              align: TextAlign.center,
-                                              size: 22,
+                                              text: "See group notifications",
+                                              color: AppColors.whiteColor,
                                               fontweight: FontWeight.normal,
                                             ),
                                           ),
-                                        );
-                                      }
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: StreamBuilder(
+                                          stream: FirebaseFirestore.instance
+                                              .collection("allposts")
+                                              .where("groupId",
+                                                  isEqualTo:
+                                                      groupList[groupIndex]
+                                                          .groupId)
+                                              .snapshots(),
+                                          builder: (context, snapshot) {
+                                            // connecting state
+                                            if (snapshot.connectionState ==
+                                                ConnectionState.waiting) {
+                                              return loadderWidget();
+                                            }
 
-                                      // data show to the ui
-                                      if (snapshot.hasData) {
-                                        var data = snapshot.data!.docs;
-                                        List<PostModel> selectedGroupPosts = [];
-                                        var selectedGroupIds = [];
-                                        for (var element in data) {
-                                          selectedGroupPosts.add(
-                                              PostModel.fromMap(
-                                                  element.data()));
-                                          selectedGroupIds.add(element.id);
-                                        }
+                                            // if no data is in collection
+                                            if (snapshot.data!.docs.length ==
+                                                0) {
+                                              return Center(
+                                                child: Padding(
+                                                  padding: const EdgeInsets
+                                                          .symmetric(
+                                                      horizontal: 20),
+                                                  child: TextComp(
+                                                    text:
+                                                        "Welcome, No post Till now create some!",
+                                                    align: TextAlign.center,
+                                                    size: 22,
+                                                    fontweight:
+                                                        FontWeight.normal,
+                                                  ),
+                                                ),
+                                              );
+                                            }
 
-                                        return ListView.builder(
-                                          itemCount: selectedGroupPosts.length,
-                                          itemBuilder: (context, index) {
-                                            return SinglePostComp(
-                                              postData:
-                                                  selectedGroupPosts[index],
-                                              postId: selectedGroupIds[index],
+                                            // data show to the ui
+                                            if (snapshot.hasData) {
+                                              var data = snapshot.data!.docs;
+                                              List<PostModel>
+                                                  selectedGroupPosts = [];
+                                              var selectedGrpPostIds = [];
+                                              for (var element in data) {
+                                                selectedGroupPosts.add(
+                                                    PostModel.fromMap(
+                                                        element.data()));
+                                                selectedGrpPostIds
+                                                    .add(element.id);
+                                              }
+
+                                              return ListView.builder(
+                                                itemCount:
+                                                    selectedGroupPosts.length,
+                                                itemBuilder: (context, index) {
+                                                  return SinglePostComp(
+                                                    postData:
+                                                        selectedGroupPosts[
+                                                            index],
+                                                    postId: selectedGrpPostIds[
+                                                        index],
+                                                    groupId: groupList[index]
+                                                        .groupId,
+                                                  );
+                                                },
+                                              );
+                                            }
+
+                                            // empty content
+                                            return Center(
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 20),
+                                                child: TextComp(
+                                                  text:
+                                                      "Welcome, No post Till now create some!",
+                                                  align: TextAlign.center,
+                                                  size: 20,
+                                                  fontweight: FontWeight.normal,
+                                                ),
+                                              ),
                                             );
                                           },
-                                        );
-                                      }
-
-                                      // empty content
-                                      return Center(
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 20),
-                                          child: TextComp(
-                                            text:
-                                                "Welcome, No post Till now create some!",
-                                            align: TextAlign.center,
-                                            size: 20,
-                                            fontweight: FontWeight.normal,
-                                          ),
                                         ),
-                                      );
-                                    },
+                                      ),
+                                    ],
                                   ),
 
                         // groups tab content

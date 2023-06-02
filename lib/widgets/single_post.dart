@@ -16,8 +16,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 class SinglePostComp extends StatefulWidget {
   PostModel postData;
   String postId;
+  String groupId;
 
-  SinglePostComp({super.key, required this.postData, required this.postId});
+  SinglePostComp(
+      {super.key,
+      required this.postData,
+      required this.postId,
+      required this.groupId});
 
   @override
   State<SinglePostComp> createState() => _SinglePostCompState();
@@ -174,6 +179,7 @@ class _SinglePostCompState extends State<SinglePostComp> {
                         MaterialPageRoute(
                           builder: (context) => CommentScreen(
                             postId: widget.postId,
+                            groupId: widget.groupId,
                           ),
                         ));
                   },

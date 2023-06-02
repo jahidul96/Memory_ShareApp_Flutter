@@ -5,11 +5,13 @@ class GroupInfo {
   String groupName;
   String groupProfilePic;
   String adminId;
+  int notificationCounter;
   GroupInfo({
     required this.groupId,
     required this.groupName,
     required this.groupProfilePic,
     required this.adminId,
+    required this.notificationCounter,
   });
 
   Map<String, dynamic> toMap() {
@@ -18,6 +20,7 @@ class GroupInfo {
       'groupName': groupName,
       'groupProfilePic': groupProfilePic,
       'adminId': adminId,
+      'notificationCounter': notificationCounter,
     };
   }
 
@@ -27,6 +30,7 @@ class GroupInfo {
       groupName: map['groupName'] ?? '',
       groupProfilePic: map['groupProfilePic'] ?? '',
       adminId: map['adminId'] ?? '',
+      notificationCounter: map['notificationCounter']?.toInt() ?? 0,
     );
   }
 

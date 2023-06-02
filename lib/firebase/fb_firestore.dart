@@ -1,9 +1,10 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, avoid_print
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:memoryapp/firebase/fb_instance.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:memoryapp/models/simple_models.dart';
 import 'package:memoryapp/widgets/confirmation_dialoge_model.dart';
 
 // get myData
@@ -52,11 +53,37 @@ likeFbPost({
 addNewGroup({
   required data,
   required BuildContext context,
-}) {
+  required List<String> emailList,
+}) async {
   try {
-    FirebaseFirestore.instance.collection("groups").add(data);
+    var val = await FirebaseFirestore.instance.collection("groups").add(data);
+
+    // adding notification to the group
+    for (var element in emailList) {
+      if (element == FirebaseAuth.instance.currentUser!.email) {
+        continue;
+      }
+
+      var notificationVal =
+          GroupNotificationModel(name: element, type: "groupMember");
+      addNotification(val.id, notificationVal.toMap());
+    }
   } catch (e) {
     return alertUser(context: context, alertText: "Something went wrong!");
+  }
+}
+
+// addNotification into group
+
+addNotification(id, data) async {
+  try {
+    await FirebaseFirestore.instance
+        .collection("groups")
+        .doc(id)
+        .collection("groupNotifications")
+        .add(data);
+  } catch (e) {
+    print(e);
   }
 }
 

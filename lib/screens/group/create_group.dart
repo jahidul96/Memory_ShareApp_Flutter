@@ -78,9 +78,11 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
           groupMember: friendEmails,
           createdAt: DateTime.now(),
           adminId: user.id,
-          creatorName: user.username);
+          creatorName: user.username,
+          notificationCounter: friendEmails.length - 1);
 
-      addNewGroup(data: groupData.toMap(), context: context);
+      await addNewGroup(
+          data: groupData.toMap(), context: context, emailList: friendEmails);
       setState(() {
         loading = false;
       });

@@ -1,10 +1,11 @@
-// ignore_for_file: must_be_immutable
+// ignore_for_file: must_be_immutable, use_build_context_synchronously
 
 import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:memoryapp/utils/app_colors.dart';
+import 'package:memoryapp/widgets/confirmation_dialoge_model.dart';
 import 'package:memoryapp/widgets/text_comp.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -27,23 +28,15 @@ class _FileDownloadScreenState extends State<FileDownloadScreen> {
     final baseStorage = await getExternalStorageDirectory();
     final status = await Permission.storage.request();
     if (status.isGranted) {
-      // var response = await dio.download(
-      //     "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-      //     "${baseStorage!.path}/${DateTime.now()}.mp4");
-
-      // print(response.statusCode);
-
       setState(() {
         isDownloading = true;
       });
 
       try {
-        final response = await Dio().get(
+        final response = await dio.get(
           widget.url,
           options: Options(responseType: ResponseType.bytes),
         );
-
-        final directory = await getApplicationDocumentsDirectory();
         final savedDir = baseStorage!.path;
 
         final file = File('$savedDir/${DateTime.now()}.png');
@@ -57,17 +50,15 @@ class _FileDownloadScreenState extends State<FileDownloadScreen> {
           isDownloading = false;
           completed = true;
         });
-
-        print('File downloaded successfully and saved to the gallery');
       } catch (e) {
-        print('Error occurred while downloading file: $e');
-
         setState(() {
           isDownloading = false;
         });
       }
     } else {
-      print("no permision");
+      return alertUser(
+          context: context,
+          alertText: "You have to give permision ro download something");
     }
   }
 

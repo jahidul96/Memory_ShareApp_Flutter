@@ -5,6 +5,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:memoryapp/firebase/fb_firestore.dart';
 import 'package:memoryapp/models/comment_model.dart';
+import 'package:memoryapp/models/simple_models.dart';
 import 'package:memoryapp/models/user_model.dart';
 import 'package:memoryapp/provider/user_provider.dart';
 import 'package:memoryapp/utils/app_colors.dart';
@@ -17,7 +18,8 @@ import 'package:memoryapp/widgets/loadder_widget.dart';
 
 class CommentScreen extends StatefulWidget {
   String postId;
-  CommentScreen({super.key, required this.postId});
+  String groupId;
+  CommentScreen({super.key, required this.postId, required this.groupId});
 
   @override
   State<CommentScreen> createState() => _CommentScreenState();
@@ -43,27 +45,26 @@ class _CommentScreenState extends State<CommentScreen> {
         docId: widget.postId,
         errorText: "Firestore error");
 
+    var notificationVal =
+        GroupNotificationModel(name: user.email, type: "comment");
+
+    addNotification(widget.groupId, notificationVal.toMap());
+
     commentController.clear();
   }
 
   @override
   void initState() {
-    super.initState();
-
-    timer();
-  }
-
-  timer() {
     Timer(const Duration(seconds: 3), () {
       setState(() {
         contentLoading = false;
       });
     });
+    super.initState();
   }
 
   @override
   void dispose() {
-    timer();
     super.dispose();
   }
 
