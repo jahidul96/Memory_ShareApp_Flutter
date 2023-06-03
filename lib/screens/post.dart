@@ -74,12 +74,12 @@ class _PostScreenState extends State<PostScreen> {
     if (!widget.canSelectGroup) {
       if (_image == null || descTextController.text.isEmpty) {
         return alertUser(context: context, alertText: "Fill all the field's");
-      } else {
-        if (_image == null ||
-            selectedGroup.groupName == " " ||
-            descTextController.text.isEmpty) {
-          return alertUser(context: context, alertText: "Fill all the field's");
-        }
+      }
+    } else {
+      if (_image == null ||
+          selectedGroup.groupName == " " ||
+          descTextController.text.isEmpty) {
+        return alertUser(context: context, alertText: "Fill all the field's");
       }
     }
 
@@ -231,10 +231,43 @@ class _PostScreenState extends State<PostScreen> {
                     child: ListView.builder(
                       itemCount: widget.groupList!.length,
                       itemBuilder: (context, index) {
-                        return ListTile(
+                        return InkWell(
                           onTap: () => getGroup(widget.groupList![index]),
-                          title: TextComp(
-                              text: widget.groupList![index].groupName),
+                          child: Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 10,
+                            ),
+                            color: AppColors.whiteColor,
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 40,
+                                  height: 40,
+                                  decoration: BoxDecoration(
+                                    color: AppColors.lightGrey,
+                                    borderRadius: BorderRadius.circular(100),
+                                  ),
+                                  child: Center(
+                                    child: TextComp(
+                                        text: widget.groupList![index].groupName
+                                            .substring(0, 1)),
+                                  ),
+                                ),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                Expanded(
+                                  child: TextComp(
+                                      text: widget.groupList![index].groupName
+                                                  .length >
+                                              20
+                                          ? '${widget.groupList![index].groupName.substring(0, 20)}...'
+                                          : widget.groupList![index].groupName),
+                                ),
+                              ],
+                            ),
+                          ),
                         );
                       },
                     ),
@@ -274,3 +307,23 @@ class _PostScreenState extends State<PostScreen> {
         ),
       );
 }
+
+
+// ListTile(
+//                           onTap: () => getGroup(widget.groupList![index]),
+                          // leading: Container(
+                          //   width: 40,
+                          //   height: 40,
+                          //   decoration: BoxDecoration(
+                          //     color: AppColors.lightGrey,
+                          //     borderRadius: BorderRadius.circular(100),
+                          //   ),
+//                             child: Center(
+//                               child: TextComp(
+//                                   text: widget.groupList![index].groupName
+//                                       .substring(0, 1)),
+//                             ),
+//                           ),
+//                           title: TextComp(
+//                               text: widget.groupList![index].groupName),
+//                         )

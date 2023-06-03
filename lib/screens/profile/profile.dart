@@ -3,6 +3,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:memoryapp/provider/user_provider.dart';
+import 'package:memoryapp/screens/group/all_groups.dart';
 import 'package:memoryapp/screens/profile/edit_profile_info.dart';
 import 'package:memoryapp/utils/app_colors.dart';
 import 'package:memoryapp/widgets/confirmation_dialoge_model.dart';
@@ -44,7 +45,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           return SingleChildScrollView(
             child: Column(
               children: [
-                const SizedBox(height: 30),
+                const SizedBox(height: 20),
                 Center(
                   child: Column(
                     children: [
@@ -89,7 +90,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     );
                   },
                 ),
-                optionComp(text: "Password & security", onTap: () {}),
+                optionComp(
+                    text: "Groups",
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const AllGroupsScreen(),
+                          ));
+                    }),
                 optionComp(text: "Privacy policy", onTap: () {}),
                 optionComp(text: "About app", onTap: () {}),
                 optionComp(text: "Delete my account", onTap: () {}),

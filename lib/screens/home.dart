@@ -8,6 +8,7 @@ import 'package:memoryapp/models/post_model.dart';
 import 'package:memoryapp/models/group_info.dart';
 import 'package:memoryapp/models/user_model.dart';
 import 'package:memoryapp/provider/user_provider.dart';
+import 'package:memoryapp/screens/chat/chat_screen.dart';
 import 'package:memoryapp/screens/group/create_group.dart';
 import 'package:memoryapp/screens/group/group_notifications.dart';
 import 'package:memoryapp/screens/group/single_group_details.dart';
@@ -198,30 +199,53 @@ class _HomeScreenState extends State<HomeScreen> {
                                 : Column(
                                     children: [
                                       // notification button
-                                      InkWell(
-                                        onTap: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  GroupNotificationScreen(
-                                                      groupInfo: groupList[
-                                                          groupIndex]),
-                                            ),
-                                          );
-                                        },
-                                        child: Container(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 10, horizontal: 15),
-                                          color: AppColors.appbarColor,
-                                          child: Center(
-                                            child: TextComp(
-                                              text: "See group notifications",
-                                              color: AppColors.whiteColor,
-                                              fontweight: FontWeight.normal,
+                                      Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.end,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: [
+                                          IconButton(
+                                            onPressed: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      GroupNotificationScreen(
+                                                          groupInfo: groupList[
+                                                              groupIndex]),
+                                                ),
+                                              );
+                                            },
+                                            icon: Icon(
+                                              Icons.notification_add_rounded,
+                                              size: 25,
+                                              color: AppColors.appbarColor,
                                             ),
                                           ),
-                                        ),
+                                          IconButton(
+                                            onPressed: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) => ChatScreen(
+                                                      isGroupChat: true,
+                                                      groupProfilePic:
+                                                          groupList[groupIndex]
+                                                              .groupProfilePic,
+                                                      docId:
+                                                          groupList[groupIndex]
+                                                              .groupId),
+                                                ),
+                                              );
+                                            },
+                                            icon: Icon(
+                                              Icons.message_rounded,
+                                              size: 25,
+                                              color: AppColors.appbarColor,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                       Expanded(
                                         child: StreamBuilder(

@@ -1,18 +1,20 @@
 import 'dart:convert';
 
+import 'package:memoryapp/models/user_model.dart';
+
 class CommentModel {
-  String commentterId;
+  UserModel commentterInfo;
   String commentText;
   DateTime commentTime;
   CommentModel({
-    required this.commentterId,
+    required this.commentterInfo,
     required this.commentText,
     required this.commentTime,
   });
 
   Map<String, dynamic> toMap() {
     return {
-      'commentterId': commentterId,
+      'commentterInfo': commentterInfo.toMap(),
       'commentText': commentText,
       'commentTime': commentTime.millisecondsSinceEpoch,
     };
@@ -20,7 +22,7 @@ class CommentModel {
 
   factory CommentModel.fromMap(Map<String, dynamic> map) {
     return CommentModel(
-      commentterId: map['commentterId'] ?? '',
+      commentterInfo: UserModel.fromMap(map['commentterInfo']),
       commentText: map['commentText'] ?? '',
       commentTime: DateTime.fromMillisecondsSinceEpoch(map['commentTime']),
     );

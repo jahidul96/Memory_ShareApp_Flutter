@@ -35,7 +35,7 @@ class _CommentScreenState extends State<CommentScreen> {
     }
 
     var data = CommentModel(
-        commentterId: user.id,
+        commentterInfo: user,
         commentText: commentController.text,
         commentTime: DateTime.now());
 
@@ -46,7 +46,7 @@ class _CommentScreenState extends State<CommentScreen> {
         errorText: "Firestore error");
 
     var notificationVal =
-        GroupNotificationModel(name: user.email, type: "comment");
+        GroupNotificationModel(name: user.username, type: "comment");
 
     addNotification(widget.groupId, notificationVal.toMap());
 
@@ -151,80 +151,65 @@ class _CommentScreenState extends State<CommentScreen> {
     required CommentModel commentData,
     required String commentId,
   }) =>
-      StreamBuilder(
-        stream: FirebaseFirestore.instance
-            .collection("users")
-            .doc(commentData.commentterId)
-            .snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            var data = snapshot.data!.data() as Map<String, dynamic>;
-            UserModel userData = UserModel.fromMap(data);
-            return Padding(
-              padding: const EdgeInsets.only(
-                left: 15,
-                right: 15,
-                bottom: 10,
-              ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 10),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(100),
-                        child: Image.network(
-                          userData.profilePic,
-                          width: 45,
-                          height: 45,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ],
+      Padding(
+        padding: const EdgeInsets.only(
+          left: 15,
+          right: 15,
+          bottom: 10,
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 10),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(100),
+                  child: Image.network(
+                    commentData.commentterInfo.profilePic,
+                    width: 45,
+                    height: 45,
+                    fit: BoxFit.cover,
                   ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 10),
-                      decoration: BoxDecoration(
-                        color: AppColors.lightGrey,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Expanded(
-                                  child: TextComp(text: userData.username)),
-                              TextComp(
-                                text: "1h",
-                                fontweight: FontWeight.normal,
-                                size: 13,
-                              )
-                            ],
-                          ),
-                          TextComp(
-                            text: commentData.commentText,
-                            fontweight: FontWeight.normal,
-                          ),
-                        ],
-                      ),
+                ),
+              ],
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Container(
+                width: double.infinity,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                decoration: BoxDecoration(
+                  color: AppColors.lightGrey,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                            child: TextComp(
+                                text: commentData.commentterInfo.username)),
+                        TextComp(
+                          text: "1h",
+                          fontweight: FontWeight.normal,
+                          size: 13,
+                        )
+                      ],
                     ),
-                  )
-                ],
+                    TextComp(
+                      text: commentData.commentText,
+                      fontweight: FontWeight.normal,
+                    ),
+                  ],
+                ),
               ),
-            );
-          }
-
-          return Center(
-            child: Container(),
-          );
-        },
+            )
+          ],
+        ),
       );
 
   Widget bottomCommentComp({required UserModel user}) => Container(
