@@ -83,6 +83,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
 
       await addNewGroup(
           data: groupData.toMap(), context: context, emailList: friendEmails);
+
       setState(() {
         loading = false;
       });

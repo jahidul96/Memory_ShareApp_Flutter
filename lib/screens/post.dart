@@ -1,8 +1,9 @@
-// ignore_for_file: must_be_immutable, use_build_context_synchronously, depend_on_referenced_packages
+// ignore_for_file: must_be_immutable, use_build_context_synchronously, depend_on_referenced_packages, avoid_print, unnecessary_null_comparison, prefer_is_empty
 
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:memoryapp/firebase/fb_firestore.dart';
 import 'package:memoryapp/firebase/fb_storage.dart';
 import 'package:memoryapp/models/post_model.dart';
@@ -34,28 +35,19 @@ class PostScreen extends StatefulWidget {
 }
 
 class _PostScreenState extends State<PostScreen> {
-  File? _image;
+  List<File>? _images = [];
+
   bool loading = false;
   TextEditingController postTagController = TextEditingController();
   TextEditingController descTextController = TextEditingController();
+  final ImagePicker picker = ImagePicker();
+
   GroupInfo selectedGroup = GroupInfo(
       groupId: "",
       groupName: "",
       groupProfilePic: "",
       adminId: "",
       notificationCounter: 0);
-
-  getImage() async {
-    try {
-      var tempImg = await pickImage();
-      setState(() {
-        _image = tempImg;
-      });
-    } catch (e) {
-      return alertUser(
-          context: context, alertText: "Error while image graving");
-    }
-  }
 
   getGroup(GroupInfo item) {
     setState(() {
@@ -66,17 +58,16 @@ class _PostScreenState extends State<PostScreen> {
   }
 
   // post data
-
   postData() async {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     final user = userProvider.user;
 
     if (!widget.canSelectGroup) {
-      if (_image == null || descTextController.text.isEmpty) {
+      if (_images!.isEmpty == null || descTextController.text.isEmpty) {
         return alertUser(context: context, alertText: "Fill all the field's");
       }
     } else {
-      if (_image == null ||
+      if (_images!.isEmpty ||
           selectedGroup.groupName == " " ||
           descTextController.text.isEmpty) {
         return alertUser(context: context, alertText: "Fill all the field's");
@@ -87,16 +78,21 @@ class _PostScreenState extends State<PostScreen> {
       loading = true;
     });
 
-    // image upload process to fb bucket!!
-    String fileName = p.basename(_image!.path);
-    String imagePath = 'groupProfilePic/${DateTime.now()}$fileName';
+    List<String> postImages = [];
 
     try {
-      var url = await uploadFile(
-          image: _image!, imagePath: imagePath, context: context);
+      for (var element in _images!) {
+        // image upload process to fb bucket!!
+        String fileName = p.basename(element.path);
+        String imagePath = 'groupProfilePic/${DateTime.now()}$fileName';
+        var url = await uploadFile(
+            image: element, imagePath: imagePath, context: context);
+
+        postImages.add(url);
+      }
 
       var postData = PostModel(
-        postImage: url,
+        postImages: postImages,
         description: descTextController.text,
         groupId:
             widget.canSelectGroup ? selectedGroup.groupId : widget.groupId!,
@@ -128,7 +124,7 @@ class _PostScreenState extends State<PostScreen> {
                 Navigator.pop(context);
                 descTextController.clear();
                 setState(() {
-                  _image = null;
+                  _images = [];
                 });
               },
             );
@@ -138,6 +134,45 @@ class _PostScreenState extends State<PostScreen> {
       });
       return alertUser(
           context: context, alertText: "Error while uploading profile pic");
+    }
+  }
+
+// select multi images
+  Future pickMultiImages() async {
+    try {
+      final List<XFile> images = await picker.pickMultiImage();
+
+      if (images.length > 4) {
+        return alertUser(
+            context: context, alertText: "you can add 4 images only");
+      }
+
+      setState(() {
+        _images = images.map((XFile xfile) => File(xfile.path)).toList();
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
+
+// select multi images
+  Future addNewImages() async {
+    try {
+      final List<XFile> images = await picker.pickMultiImage(imageQuality: 50);
+
+      if (_images!.length + images.length > 4) {
+        return alertUser(
+            context: context, alertText: "you can add 4 images only");
+      }
+
+      var tempImages = images.map((XFile xfile) => File(xfile.path)).toList();
+      for (var element in tempImages) {
+        setState(() {
+          _images!.add(element);
+        });
+      }
+    } catch (e) {
+      print(e);
     }
   }
 
@@ -156,12 +191,97 @@ class _PostScreenState extends State<PostScreen> {
       ),
       body: SingleChildScrollView(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 20),
-            // post image/video etc btn
-            imagePickerPlaceholderComp(onTap: getImage, image: _image),
 
-            const SizedBox(height: 30),
+            // multi image pick from gallery
+
+            _images!.length == 0
+                ? Center(
+                    child: InkWell(
+                      onTap: () => pickMultiImages(),
+                      child: Container(
+                        width: 80,
+                        height: 80,
+                        decoration: BoxDecoration(
+                          color: AppColors.appbarColor,
+                          borderRadius: BorderRadius.circular(100),
+                        ),
+                        child: const Center(
+                          child: Icon(
+                            Icons.image,
+                            size: 35,
+                            color: AppColors.whiteColor,
+                          ),
+                        ),
+                      ),
+                    ),
+                  )
+                : Container(
+                    height: 80,
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(horizontal: 15),
+                    child: GridView.builder(
+                      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                          maxCrossAxisExtent:
+                              MediaQuery.of(context).size.width / 4,
+                          mainAxisExtent: 80,
+                          crossAxisSpacing: 5,
+                          mainAxisSpacing: 10),
+                      itemCount: _images!.length,
+                      itemBuilder: (context, index) {
+                        return InkWell(
+                          onTap: () {
+                            setState(() {
+                              _images!.removeAt(index);
+                            });
+                          },
+                          child: Stack(
+                            children: [
+                              Image.file(
+                                _images![index],
+                                width: double.infinity,
+                                height: double.infinity,
+                                fit: BoxFit.cover,
+                              ),
+                              Positioned(
+                                right: 0,
+                                child: singlePhotoRemoveIconComp(),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+            const SizedBox(height: 10),
+            _images!.length == 0
+                ? Container()
+                : Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 15),
+                    child: Row(
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            setState(() {
+                              _images = [];
+                            });
+                          },
+                          child: iconContainer(icon: Icons.close),
+                        ),
+                        const SizedBox(width: 10),
+                        _images!.length < 4
+                            ? InkWell(
+                                onTap: () => addNewImages(),
+                                child: iconContainer(icon: Icons.add),
+                              )
+                            : Container(),
+                      ],
+                    ),
+                  ),
+
+            const SizedBox(height: 20),
 
             widget.canSelectGroup
                 ?
@@ -173,7 +293,7 @@ class _PostScreenState extends State<PostScreen> {
                 ? const SizedBox(height: 30)
                 : const SizedBox(height: 0),
 
-// description input
+            // description input
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15),
               child: Container(
@@ -217,6 +337,35 @@ class _PostScreenState extends State<PostScreen> {
     );
   }
 
+  Widget singlePhotoRemoveIconComp() => Container(
+        width: 20,
+        height: 20,
+        decoration: BoxDecoration(
+            color: AppColors.lightGrey,
+            borderRadius: BorderRadius.circular(10)),
+        child: const Center(
+          child: Icon(
+            Icons.remove,
+            size: 15,
+            color: AppColors.buttonColor,
+          ),
+        ),
+      );
+
+  Widget iconContainer({required IconData icon}) => Container(
+        height: 50,
+        width: 50,
+        decoration: BoxDecoration(
+          color: AppColors.lightGrey,
+          borderRadius: BorderRadius.circular(100),
+        ),
+        child: Center(
+          child: Icon(
+            icon,
+            size: 30,
+          ),
+        ),
+      );
   Widget selectGroup() => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15),
         child: InkWell(
@@ -307,23 +456,3 @@ class _PostScreenState extends State<PostScreen> {
         ),
       );
 }
-
-
-// ListTile(
-//                           onTap: () => getGroup(widget.groupList![index]),
-                          // leading: Container(
-                          //   width: 40,
-                          //   height: 40,
-                          //   decoration: BoxDecoration(
-                          //     color: AppColors.lightGrey,
-                          //     borderRadius: BorderRadius.circular(100),
-                          //   ),
-//                             child: Center(
-//                               child: TextComp(
-//                                   text: widget.groupList![index].groupName
-//                                       .substring(0, 1)),
-//                             ),
-//                           ),
-//                           title: TextComp(
-//                               text: widget.groupList![index].groupName),
-//                         )

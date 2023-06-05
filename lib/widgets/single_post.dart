@@ -32,6 +32,8 @@ class SinglePostComp extends StatefulWidget {
 }
 
 class _SinglePostCompState extends State<SinglePostComp> {
+  ScrollController _scrollController = ScrollController();
+
   likePost() {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     var user = userProvider.user;
@@ -48,8 +50,6 @@ class _SinglePostCompState extends State<SinglePostComp> {
       likeFbPost(
           data: {"likes": likesArry}, context: context, docId: widget.postId);
     }
-
-    // print(isLikedAlready);
   }
 
   @override
@@ -133,29 +133,57 @@ class _SinglePostCompState extends State<SinglePostComp> {
           const SizedBox(height: 5),
 
           // post image
-          InkWell(
-            onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        FileDownloadScreen(url: widget.postData.postImage),
-                  ));
-            },
-            child: CachedNetworkImage(
-              width: double.infinity,
-              height: 250,
-              fit: BoxFit.cover,
-              imageUrl: widget.postData.postImage,
-              placeholder: (context, url) => const Center(
-                child: Icon(
-                  Icons.image,
-                  size: 150,
-                ),
-              ),
-              errorWidget: (context, url, error) => const Icon(Icons.error,size: 150),
+
+          SizedBox(
+            width: double.infinity,
+            height: 250,
+            child: ListView.builder(
+              controller: _scrollController,
+              scrollDirection: Axis.horizontal,
+              physics: const ClampingScrollPhysics(),
+              itemCount: widget.postData.postImages.length,
+              itemBuilder: (context, index) {
+                return CachedNetworkImage(
+                  width: MediaQuery.of(context).size.width,
+                  height: 250,
+                  fit: BoxFit.cover,
+                  imageUrl: widget.postData.postImages[index],
+                  placeholder: (context, url) => const Center(
+                    child: Icon(
+                      Icons.image,
+                      size: 150,
+                    ),
+                  ),
+                  errorWidget: (context, url, error) =>
+                      const Icon(Icons.error, size: 150),
+                );
+              },
             ),
           ),
+          // InkWell(
+          //   onTap: () {
+          //     Navigator.push(
+          //         context,
+          //         MaterialPageRoute(
+          //           builder: (context) =>
+          //               FileDownloadScreen(url: widget.postData.postImages[0]),
+          //         ));
+          //   },
+          //   child: CachedNetworkImage(
+          //     width: double.infinity,
+          //     height: 250,
+          //     fit: BoxFit.cover,
+          //     imageUrl: widget.postData.postImages.first,
+          //     placeholder: (context, url) => const Center(
+          //       child: Icon(
+          //         Icons.image,
+          //         size: 150,
+          //       ),
+          //     ),
+          //     errorWidget: (context, url, error) =>
+          //         const Icon(Icons.error, size: 150),
+          //   ),
+          // ),
 
           const SizedBox(height: 15),
 

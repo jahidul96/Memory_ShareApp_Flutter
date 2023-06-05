@@ -184,9 +184,17 @@ class _SingleGroupPostAndMediaScreenState
                       if (snapshot.hasData) {
                         var data = snapshot.data!.docs;
                         List<PostModel> allposts = [];
+                        List<String> allMedias = [];
                         List<String> postIds = [];
                         for (var doc in data) {
                           allposts.add(PostModel.fromMap(doc.data()));
+                          var postImages = doc.data()["postImages"];
+                          for (var element in postImages) {
+                            allMedias.add(element);
+                          }
+
+                          // print(doc.data()["postImages"]);
+
                           postIds.add(doc.id);
                         }
 
@@ -210,7 +218,7 @@ class _SingleGroupPostAndMediaScreenState
                             GridView.builder(
                                 padding: const EdgeInsets.all(10),
                                 physics: const ClampingScrollPhysics(),
-                                itemCount: allposts.length,
+                                itemCount: allMedias.length,
                                 gridDelegate:
                                     SliverGridDelegateWithMaxCrossAxisExtent(
                                         maxCrossAxisExtent:
@@ -227,15 +235,14 @@ class _SingleGroupPostAndMediaScreenState
                                           MaterialPageRoute(
                                             builder: (context) =>
                                                 FileDownloadScreen(
-                                                    url: allposts[index]
-                                                        .postImage),
+                                                    url: allMedias[index]),
                                           ));
                                     },
                                     child: CachedNetworkImage(
                                       width: double.infinity,
                                       height: 120,
                                       fit: BoxFit.cover,
-                                      imageUrl: allposts[index].postImage,
+                                      imageUrl: allMedias[index],
                                       placeholder: (context, url) =>
                                           const Center(
                                         child: Icon(

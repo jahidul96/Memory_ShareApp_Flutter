@@ -46,22 +46,20 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
-    super.initState();
     getUserData();
-    timer();
-  }
-
-  timer() {
+    setState(() {
+      groupIndex = 0;
+    });
     Timer(const Duration(seconds: 4), () {
       setState(() {
         dataLoading = false;
       });
     });
+    super.initState();
   }
 
   @override
   void dispose() {
-    timer();
     super.dispose();
   }
 
@@ -294,6 +292,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 selectedGroupPosts.add(
                                                     PostModel.fromMap(
                                                         element.data()));
+
                                                 selectedGrpPostIds
                                                     .add(element.id);
                                               }
@@ -308,8 +307,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                                             index],
                                                     postId: selectedGrpPostIds[
                                                         index],
-                                                    groupId: groupList[index]
-                                                        .groupId,
+                                                    groupId:
+                                                        groupList[groupIndex]
+                                                            .groupId,
                                                   );
                                                 },
                                               );
