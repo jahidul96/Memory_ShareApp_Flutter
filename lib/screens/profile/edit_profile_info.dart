@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors_in_immutables, use_build_context_synchronously, depend_on_referenced_packages, must_be_immutable
 import 'dart:io';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:memoryapp/firebase/fb_firestore.dart';
 import 'package:memoryapp/firebase/fb_storage.dart';
@@ -156,11 +157,23 @@ class _EditProfileInfoState extends State<EditProfileInfo> {
                     )
                   : ClipRRect(
                       borderRadius: BorderRadius.circular(100),
-                      child: Image.network(
-                        profilePic,
+                      child: CachedNetworkImage(
                         width: 90,
                         height: 90,
                         fit: BoxFit.cover,
+                        imageUrl: profilePic,
+                        placeholder: (context, url) => const Center(
+                          child: Icon(
+                            Icons.person,
+                            size: 50,
+                            color: AppColors.whiteColor,
+                          ),
+                        ),
+                        errorWidget: (context, url, error) => const Icon(
+                          Icons.error,
+                          color: AppColors.whiteColor,
+                          size: 50,
+                        ),
                       ),
                     ),
               const SizedBox(height: 8),

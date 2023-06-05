@@ -1,11 +1,13 @@
 // ignore_for_file: must_be_immutable
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:memoryapp/models/message_model.dart';
 import 'package:memoryapp/utils/app_colors.dart';
 import 'package:memoryapp/widgets/text_comp.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class MessageComp extends StatelessWidget {
   MessageModel messageModel;
@@ -70,11 +72,22 @@ class MessageComp extends StatelessWidget {
 // friends profile pic
   Widget profilePic() => ClipRRect(
         borderRadius: BorderRadius.circular(100),
-        child: Image.network(
-          messageModel.senderProfilePic,
+        child: CachedNetworkImage(
           width: 25,
           height: 25,
           fit: BoxFit.cover,
+          imageUrl: messageModel.senderProfilePic,
+          placeholder: (context, url) => Center(
+            child: Icon(
+              Icons.image,
+              size: 25,
+              color: AppColors.appbarColor,
+            ),
+          ),
+          errorWidget: (context, url, error) => const Icon(
+            Icons.error,
+            color: AppColors.whiteColor,
+          ),
         ),
       );
 
@@ -99,7 +112,7 @@ class MessageComp extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Padding(
-                padding: const EdgeInsets.only(right: 30),
+                padding: const EdgeInsets.only(right: 25),
                 child: TextComp(
                   text: messageModel.text,
                   color: messageModel.senderId == authUser.currentUser!.uid
@@ -110,9 +123,8 @@ class MessageComp extends StatelessWidget {
                 ),
               ),
               TextComp(
-                text: DateFormat.Hm().format(
-                  messageModel.createdAt.toDate(),
-                ),
+                text:
+                    timeago.format(messageModel.createdAt, locale: 'en_short'),
                 size: 9,
                 fontweight: FontWeight.normal,
                 color: messageModel.senderId == authUser.currentUser!.uid
@@ -147,18 +159,30 @@ class MessageComp extends StatelessWidget {
                 padding: const EdgeInsets.only(right: 30),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(10),
-                  child: Image.network(
-                    messageModel.imgUrl,
+                  child: CachedNetworkImage(
                     width: double.infinity,
                     height: 80,
                     fit: BoxFit.cover,
+                    imageUrl: messageModel.imgUrl,
+                    placeholder: (context, url) => Center(
+                      child: Icon(
+                        Icons.image,
+                        size: 60,
+                        color:
+                            messageModel.senderId == authUser.currentUser!.uid
+                                ? AppColors.whiteColor
+                                : AppColors.black,
+                      ),
+                    ),
+                    errorWidget: (context, url, error) => const Icon(
+                      Icons.error,
+                      color: AppColors.whiteColor,
+                    ),
                   ),
                 ),
               ),
               Text(
-                DateFormat.Hm().format(
-                  messageModel.createdAt.toDate(),
-                ),
+                timeago.format(messageModel.createdAt, locale: 'en_short'),
                 style: TextStyle(
                   color: messageModel.senderId == authUser.currentUser!.uid
                       ? AppColors.whiteColor

@@ -2,6 +2,7 @@
 
 import 'dart:async';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:memoryapp/models/group_model.dart';
 import 'package:memoryapp/models/post_model.dart';
@@ -440,20 +441,29 @@ class _HomeScreenState extends State<HomeScreen> {
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             // user image
-                            user.profilePic != ""
-                                ? ClipRRect(
-                                    borderRadius: BorderRadius.circular(100),
-                                    child: Image.network(
-                                      user.profilePic,
-                                      width: 45,
-                                      height: 45,
-                                      fit: BoxFit.cover,
-                                    ))
-                                : const Icon(
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(100),
+                              child: CachedNetworkImage(
+                                width: 45,
+                                height: 45,
+                                fit: BoxFit.cover,
+                                imageUrl: user.profilePic,
+                                placeholder: (context, url) => const Center(
+                                  child: Icon(
                                     Icons.person,
-                                    size: 40,
+                                    size: 30,
                                     color: AppColors.whiteColor,
                                   ),
+                                ),
+                                errorWidget: (context, url, error) =>
+                                    const Icon(
+                                  Icons.error,
+                                  color: AppColors.whiteColor,
+                                  size: 30,
+                                ),
+                              ),
+                            ),
+
                             const SizedBox(width: 10),
 
                             // user name and email
@@ -463,21 +473,17 @@ class _HomeScreenState extends State<HomeScreen> {
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
                                   TextComp(
-                                    text: user.username == ""
-                                        ? "Username"
-                                        : user.username.length > 12
-                                            ? "${user.username.substring(0, 12).toUpperCase()}..."
-                                            : user.username.toUpperCase(),
+                                    text: user.username.length > 12
+                                        ? "${user.username.substring(0, 12).toUpperCase()}..."
+                                        : user.username.toUpperCase(),
                                     color: Colors.white,
                                     fontweight: FontWeight.bold,
                                     size: 15,
                                   ),
                                   TextComp(
-                                    text: user.email == ""
-                                        ? "user@email.com"
-                                        : user.email.length > 20
-                                            ? "${user.email.substring(0, 19)}..."
-                                            : user.email,
+                                    text: user.email.length > 20
+                                        ? "${user.email.substring(0, 19)}..."
+                                        : user.email,
                                     color: Colors.white,
                                     fontweight: FontWeight.normal,
                                     size: 13,

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:memoryapp/models/group_info.dart';
@@ -122,11 +123,21 @@ Widget groupListTile({
             groupInfo.groupProfilePic != ""
                 ? ClipRRect(
                     borderRadius: BorderRadius.circular(100),
-                    child: Image.network(
-                      groupInfo.groupProfilePic,
+                    child: CachedNetworkImage(
                       width: 45,
                       height: 45,
                       fit: BoxFit.cover,
+                      imageUrl: groupInfo.groupProfilePic,
+                      placeholder: (context, url) => const Center(
+                        child: Icon(
+                          Icons.image,
+                          size: 30,
+                        ),
+                      ),
+                      errorWidget: (context, url, error) => const Icon(
+                        Icons.error,
+                        size: 30,
+                      ),
                     ),
                   )
                 : const Icon(
@@ -148,7 +159,7 @@ Widget groupListTile({
                     text: FirebaseAuth.instance.currentUser!.uid ==
                             groupInfo.adminId
                         ? "From you"
-                        : "",
+                        : "Friends",
                     fontweight: FontWeight.normal,
                     size: 13,
                   ),

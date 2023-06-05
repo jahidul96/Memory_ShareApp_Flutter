@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:memoryapp/provider/user_provider.dart';
@@ -52,11 +53,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       user.profilePic != ""
                           ? ClipRRect(
                               borderRadius: BorderRadius.circular(100),
-                              child: Image.network(
-                                user.profilePic,
+                              child: CachedNetworkImage(
                                 width: 90,
                                 height: 90,
                                 fit: BoxFit.cover,
+                                imageUrl: user.profilePic,
+                                placeholder: (context, url) => const Center(
+                                  child: Icon(
+                                    Icons.person,
+                                    size: 50,
+                                    color: AppColors.whiteColor,
+                                  ),
+                                ),
+                                errorWidget: (context, url, error) =>
+                                    const Icon(
+                                  Icons.error,
+                                  color: AppColors.whiteColor,
+                                  size: 50,
+                                ),
                               ),
                             )
                           : const Icon(

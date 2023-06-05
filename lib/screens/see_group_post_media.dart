@@ -2,6 +2,7 @@
 
 import 'dart:async';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -230,11 +231,24 @@ class _SingleGroupPostAndMediaScreenState
                                                         .postImage),
                                           ));
                                     },
-                                    child: Image.network(
-                                      allposts[index].postImage,
+                                    child: CachedNetworkImage(
                                       width: double.infinity,
                                       height: 120,
                                       fit: BoxFit.cover,
+                                      imageUrl: allposts[index].postImage,
+                                      placeholder: (context, url) =>
+                                          const Center(
+                                        child: Icon(
+                                          Icons.image,
+                                          size: 50,
+                                          color: AppColors.whiteColor,
+                                        ),
+                                      ),
+                                      errorWidget: (context, url, error) =>
+                                          const Icon(
+                                        Icons.error,
+                                        color: AppColors.whiteColor,
+                                      ),
                                     ),
                                   );
                                 },

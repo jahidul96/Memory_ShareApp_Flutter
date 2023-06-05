@@ -1,5 +1,6 @@
 // ignore_for_file: must_be_immutable
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:memoryapp/models/group_model.dart';
 import 'package:memoryapp/screens/see_group_post_media.dart';
@@ -38,11 +39,18 @@ class SingleGroup extends StatelessWidget {
 
             ClipRRect(
               borderRadius: BorderRadius.circular(10),
-              child: Image.network(
-                groupData.groupProfilePic,
+              child: CachedNetworkImage(
                 width: 90,
                 height: 80,
                 fit: BoxFit.cover,
+                imageUrl: groupData.groupProfilePic,
+                placeholder: (context, url) => const Center(
+                  child: Icon(
+                    Icons.image,
+                    size: 80,
+                  ),
+                ),
+                errorWidget: (context, url, error) => const Icon(Icons.error),
               ),
             ),
 

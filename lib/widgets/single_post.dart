@@ -1,6 +1,8 @@
 // ignore_for_file: must_be_immutable
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+
 import 'package:memoryapp/firebase/fb_firestore.dart';
 import 'package:memoryapp/models/post_model.dart';
 import 'package:memoryapp/models/user_model.dart';
@@ -12,6 +14,7 @@ import 'package:memoryapp/widgets/text_comp.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class SinglePostComp extends StatefulWidget {
   PostModel postData;
@@ -65,12 +68,6 @@ class _SinglePostCompState extends State<SinglePostComp> {
                 .doc(widget.postData.posterId)
                 .snapshots(),
             builder: (context, snapshot) {
-              // if (snapshot.connectionState == ConnectionState.waiting) {
-              //   return const Center(
-              //     child: CircularProgressIndicator(),
-              //   );
-              // }
-
               if (snapshot.hasData) {
                 // UserModel userData;
                 var data = snapshot.data!.data() as Map<String, dynamic>;
@@ -83,11 +80,17 @@ class _SinglePostCompState extends State<SinglePostComp> {
                     children: [
                       ClipRRect(
                         borderRadius: BorderRadius.circular(100),
-                        child: Image.network(
-                          userData.profilePic,
+                        child: CachedNetworkImage(
                           width: 40,
                           height: 40,
                           fit: BoxFit.cover,
+                          imageUrl: userData.profilePic,
+                          placeholder: (context, url) => const Icon(
+                            Icons.person,
+                            size: 25,
+                          ),
+                          errorWidget: (context, url, error) =>
+                              const Icon(Icons.error, size: 25),
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -99,7 +102,8 @@ class _SinglePostCompState extends State<SinglePostComp> {
                             size: 14,
                           ),
                           TextComp(
-                            text: "1h",
+                            text: timeago.format(widget.postData.postedAt,
+                                locale: 'en_short'),
                             color: AppColors.greyColor,
                             fontweight: FontWeight.normal,
                             size: 11,
@@ -138,11 +142,18 @@ class _SinglePostCompState extends State<SinglePostComp> {
                         FileDownloadScreen(url: widget.postData.postImage),
                   ));
             },
-            child: Image.network(
-              widget.postData.postImage,
+            child: CachedNetworkImage(
               width: double.infinity,
               height: 250,
               fit: BoxFit.cover,
+              imageUrl: widget.postData.postImage,
+              placeholder: (context, url) => const Center(
+                child: Icon(
+                  Icons.image,
+                  size: 150,
+                ),
+              ),
+              errorWidget: (context, url, error) => const Icon(Icons.error,size: 150),
             ),
           ),
 

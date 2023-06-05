@@ -2,6 +2,7 @@
 
 import 'dart:async';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:memoryapp/firebase/fb_firestore.dart';
 import 'package:memoryapp/models/comment_model.dart';
@@ -166,11 +167,19 @@ class _CommentScreenState extends State<CommentScreen> {
                 const SizedBox(height: 10),
                 ClipRRect(
                   borderRadius: BorderRadius.circular(100),
-                  child: Image.network(
-                    commentData.commentterInfo.profilePic,
+                  child: CachedNetworkImage(
                     width: 45,
                     height: 45,
                     fit: BoxFit.cover,
+                    imageUrl: commentData.commentterInfo.profilePic,
+                    placeholder: (context, url) => const Center(
+                      child: Icon(
+                        Icons.person,
+                        size: 30,
+                      ),
+                    ),
+                    errorWidget: (context, url, error) =>
+                        const Icon(Icons.error),
                   ),
                 ),
               ],

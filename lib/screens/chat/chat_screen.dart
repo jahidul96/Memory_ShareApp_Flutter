@@ -48,11 +48,10 @@ class _ChatScreenState extends State<ChatScreen> {
 
   sendChat() async {
     var user = Provider.of<UserProvider>(context, listen: false);
-
     var msgData = MessageModel(
-        text: textController.text.isEmpty ? "" : textController.text,
+        text: "",
         senderId: user.user.id,
-        createdAt: Timestamp.now(),
+        createdAt: DateTime.now(),
         imgUrl: "",
         senderProfilePic: user.user.profilePic,
         senderUsername: user.user.username);
@@ -69,21 +68,16 @@ class _ChatScreenState extends State<ChatScreen> {
         msgData.imgUrl = url;
 
         groupChat(msgData: msgData, groupId: widget.docId);
-
         setState(() {
           _image = null;
-          textController.clear();
         });
       } catch (e) {
         print(e);
       }
     } else {
+      msgData.text = textController.text;
       groupChat(msgData: msgData, groupId: widget.docId);
-
-      setState(() {
-        _image = null;
-        textController.clear();
-      });
+      textController.clear();
     }
   }
 
@@ -216,7 +210,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         const EdgeInsets.symmetric(vertical: 6, horizontal: 5),
                     child: chatBottomComp(
                         onTap: () => sendChat(),
-                        pickImage: () => pickFromGallery(),
+                        pickImage: pickFromGallery,
                         textController: textController),
                   ),
           ],
