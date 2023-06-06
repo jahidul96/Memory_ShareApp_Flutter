@@ -10,7 +10,7 @@
 # App features
 
 - create account
-- add profile picture 
+- add profile picture
 - update account info
 - create group with a group profile pic
 - add multiple users to the group
@@ -20,7 +20,8 @@
 - change timeline group from drawer on selecting from groups list
 - real-time group update when someone add user to their group
 - real-time post update when user create post to group with notification
-- from album tab user can see single group post as well as images in separate tab like instagram.
+- from album tab user can see single group post as well as images in separate
+  tab like instagram.
 - like/comment post in real-time
 - chat on specific group to all added members in real-time
 - notification screen
@@ -28,27 +29,28 @@
 - created time/ time ago etc on post and message
 - image download through app to gallery
 - image zoom on double tap
-- users can add new group member after creating group as well as can change group name in real-time
-- creator can delete group. group/ group posts/ post comments will be deleted so it will delete all document from db basically
+- users can add new group member after creating group as well as can change
+  group name in real-time
+- creator can delete group. group/ group posts/ post comments will be deleted so
+  it will delete all document from db basically
 - all will be in real-time with firebase stream builder
 - user state management with provider
-- login/ logout 
+- login/ logout
 - confirmation dialoage box
 - error confirmation dialoage box
 - permision handle for image download
-- dot indicator in post multiple images 
+- dot indicator in post multiple images
 - data loadder widgets etc
 - custome fonts(Poppins)
+- image placeholder when image not available
 - more simple/complex functionality added
 - will add more functionality
-
 
 # if you have any query feel free to inbox me from profile social links
 
 # Demo Screen
 
-
-<img src="https://github.com/jahidul96/Memory_ShareApp_Flutter/blob/main/assets/images/memory_share_app.png"  />
+<img src="https://github.com/jahidul96/Memory_ShareApp_Flutter/blob/main/assets/images/cover.png"  />
 
 # packages used so far
 
