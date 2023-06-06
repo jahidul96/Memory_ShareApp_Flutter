@@ -38,6 +38,7 @@
 - permision handle for image download
 - dot indicator in post multiple images 
 - data loadder widgets etc
+- custome fonts(Poppins)
 - more simple/complex functionality added
 - will add more functionality
 
