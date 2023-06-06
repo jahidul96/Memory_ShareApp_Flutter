@@ -1,4 +1,4 @@
-// ignore_for_file: must_be_immutable
+// ignore_for_file: must_be_immutable, prefer_final_fields
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +14,7 @@ import 'package:memoryapp/widgets/text_comp.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class SinglePostComp extends StatefulWidget {
@@ -32,7 +33,7 @@ class SinglePostComp extends StatefulWidget {
 }
 
 class _SinglePostCompState extends State<SinglePostComp> {
-  ScrollController _scrollController = ScrollController();
+  PageController _pageController = PageController();
 
   likePost() {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
@@ -132,58 +133,66 @@ class _SinglePostCompState extends State<SinglePostComp> {
 
           const SizedBox(height: 5),
 
-          // post image
-
-          SizedBox(
-            width: double.infinity,
-            height: 250,
-            child: ListView.builder(
-              controller: _scrollController,
-              scrollDirection: Axis.horizontal,
-              physics: const ClampingScrollPhysics(),
-              itemCount: widget.postData.postImages.length,
-              itemBuilder: (context, index) {
-                return CachedNetworkImage(
-                  width: MediaQuery.of(context).size.width,
-                  height: 250,
-                  fit: BoxFit.cover,
-                  imageUrl: widget.postData.postImages[index],
-                  placeholder: (context, url) => const Center(
-                    child: Icon(
-                      Icons.image,
-                      size: 150,
-                    ),
-                  ),
-                  errorWidget: (context, url, error) =>
-                      const Icon(Icons.error, size: 150),
-                );
-              },
-            ),
+          // post image with indicator
+          Column(
+            children: [
+              SizedBox(
+                width: double.infinity,
+                height: 250,
+                child: PageView.builder(
+                  controller: _pageController,
+                  scrollDirection: Axis.horizontal,
+                  physics: const ClampingScrollPhysics(),
+                  itemCount: widget.postData.postImages.length,
+                  itemBuilder: (context, index) {
+                    return InkWell(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => FileDownloadScreen(
+                                  url: widget.postData.postImages[index]),
+                            ));
+                      },
+                      child: CachedNetworkImage(
+                        width: MediaQuery.of(context).size.width,
+                        height: 250,
+                        fit: BoxFit.cover,
+                        imageUrl: widget.postData.postImages[index],
+                        placeholder: (context, url) => const Center(
+                          child: Icon(
+                            Icons.image,
+                            size: 150,
+                          ),
+                        ),
+                        errorWidget: (context, url, error) =>
+                            const Icon(Icons.error, size: 150),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              widget.postData.postImages.length == 1
+                  ? Container()
+                  : Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 5),
+                      child: SmoothPageIndicator(
+                        controller: _pageController,
+                        count: widget.postData.postImages.length,
+                        axisDirection: Axis.horizontal,
+                        effect: const SlideEffect(
+                            spacing: 8.0,
+                            radius: 10,
+                            dotWidth: 10.0,
+                            dotHeight: 10.0,
+                            paintStyle: PaintingStyle.stroke,
+                            strokeWidth: 1.5,
+                            dotColor: Colors.grey,
+                            activeDotColor: Colors.indigo),
+                      ),
+                    )
+            ],
           ),
-          // InkWell(
-          //   onTap: () {
-          //     Navigator.push(
-          //         context,
-          //         MaterialPageRoute(
-          //           builder: (context) =>
-          //               FileDownloadScreen(url: widget.postData.postImages[0]),
-          //         ));
-          //   },
-          //   child: CachedNetworkImage(
-          //     width: double.infinity,
-          //     height: 250,
-          //     fit: BoxFit.cover,
-          //     imageUrl: widget.postData.postImages.first,
-          //     placeholder: (context, url) => const Center(
-          //       child: Icon(
-          //         Icons.image,
-          //         size: 150,
-          //       ),
-          //     ),
-          //     errorWidget: (context, url, error) =>
-          //         const Icon(Icons.error, size: 150),
-          //   ),
-          // ),
 
           const SizedBox(height: 15),
 

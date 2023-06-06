@@ -92,14 +92,23 @@ class _GroupNotificationScreenState extends State<GroupNotificationScreen> {
                                         fontFamily: "Poppins",
                                       ),
                                     )
-                                  : const TextSpan(
-                                      text: ' added a new note.',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.normal,
-                                        fontSize: 14,
-                                        fontFamily: "Poppins",
-                                      ),
-                                    ),
+                                  : grpNotification[index].type == "post"
+                                      ? const TextSpan(
+                                          text: ' added a new post.',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.normal,
+                                            fontSize: 14,
+                                            fontFamily: "Poppins",
+                                          ),
+                                        )
+                                      : const TextSpan(
+                                          text: ' added a new note.',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.normal,
+                                            fontSize: 14,
+                                            fontFamily: "Poppins",
+                                          ),
+                                        ),
                             ],
                           ),
                         ),

@@ -8,6 +8,7 @@ import 'package:memoryapp/firebase/fb_firestore.dart';
 import 'package:memoryapp/firebase/fb_storage.dart';
 import 'package:memoryapp/models/post_model.dart';
 import 'package:memoryapp/models/group_info.dart';
+import 'package:memoryapp/models/simple_models.dart';
 import 'package:memoryapp/provider/user_provider.dart';
 import 'package:memoryapp/screens/home.dart';
 import 'package:memoryapp/utils/app_colors.dart';
@@ -94,40 +95,54 @@ class _PostScreenState extends State<PostScreen> {
       var postData = PostModel(
         postImages: postImages,
         description: descTextController.text,
-        groupId:
-            widget.canSelectGroup ? selectedGroup.groupId : widget.groupId!,
+        groupId: "",
         postedAt: DateTime.now(),
-        groupName:
-            widget.canSelectGroup ? selectedGroup.groupName : widget.groupName!,
+        groupName: "",
         likes: [],
         posterId: user.id,
       );
 
-      addPost(data: postData.toMap(), context: context);
-      setState(() {
-        loading = false;
-      });
+      var notificationVal =
+          GroupNotificationModel(name: user.username, type: "post");
 
-      widget.canSelectGroup
-          ? callBackAlert(
-              context: context,
-              alertText: "Post done!",
-              onPressed: () {
-                Navigator.pushNamed(context, HomeScreen.routeName);
-              },
-            )
-          : callBackAlert(
-              context: context,
-              alertText: "Post done!",
-              onPressed: () {
-                // Navigator.pushNamed(context, HomeScreen.routeName);
-                Navigator.pop(context);
-                descTextController.clear();
-                setState(() {
-                  _images = [];
-                });
-              },
-            );
+      if (widget.canSelectGroup) {
+        postData.groupId = selectedGroup.groupId;
+        postData.groupName = selectedGroup.groupName;
+
+        addPost(data: postData.toMap(), context: context);
+        addNotification(selectedGroup.groupId, notificationVal.toMap());
+        setState(() {
+          loading = false;
+        });
+        callBackAlert(
+          context: context,
+          alertText: "Post done!",
+          onPressed: () {
+            Navigator.pushNamed(context, HomeScreen.routeName);
+          },
+        );
+      } else {
+        postData.groupId = widget.groupId!;
+        postData.groupName = widget.groupName!;
+        addPost(data: postData.toMap(), context: context);
+        addNotification(widget.groupId!, notificationVal.toMap());
+        setState(() {
+          loading = false;
+        });
+
+        callBackAlert(
+          context: context,
+          alertText: "Post done!",
+          onPressed: () {
+            // Navigator.pushNamed(context, HomeScreen.routeName);
+            Navigator.pop(context);
+            descTextController.clear();
+            setState(() {
+              _images = [];
+            });
+          },
+        );
+      }
     } catch (e) {
       setState(() {
         loading = false;
@@ -140,7 +155,7 @@ class _PostScreenState extends State<PostScreen> {
 // select multi images
   Future pickMultiImages() async {
     try {
-      final List<XFile> images = await picker.pickMultiImage();
+      final List<XFile> images = await picker.pickMultiImage(imageQuality: 25);
 
       if (images.length > 4) {
         return alertUser(

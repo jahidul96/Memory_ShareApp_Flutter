@@ -90,9 +90,9 @@ addNotification(id, data) async {
 addPost({
   required data,
   required BuildContext context,
-}) {
+}) async {
   try {
-    FirebaseFirestore.instance.collection("allposts").add(data);
+    await FirebaseFirestore.instance.collection("allposts").add(data);
   } catch (e) {
     return alertUser(context: context, alertText: "Something went wrong!");
   }

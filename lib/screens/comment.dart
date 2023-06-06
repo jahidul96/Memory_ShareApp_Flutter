@@ -16,6 +16,7 @@ import 'package:memoryapp/widgets/custome_button.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:memoryapp/widgets/loadder_widget.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class CommentScreen extends StatefulWidget {
   String postId;
@@ -203,7 +204,8 @@ class _CommentScreenState extends State<CommentScreen> {
                             child: TextComp(
                                 text: commentData.commentterInfo.username)),
                         TextComp(
-                          text: "1h",
+                          text: timeago.format(commentData.commentTime,
+                              locale: 'en_short'),
                           fontweight: FontWeight.normal,
                           size: 13,
                         )
@@ -230,11 +232,18 @@ class _CommentScreenState extends State<CommentScreen> {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(100),
-              child: Image.network(
-                user.profilePic,
+              child: CachedNetworkImage(
                 width: 40,
                 height: 40,
                 fit: BoxFit.cover,
+                imageUrl: user.profilePic,
+                placeholder: (context, url) => const Center(
+                  child: Icon(
+                    Icons.person,
+                    size: 30,
+                  ),
+                ),
+                errorWidget: (context, url, error) => const Icon(Icons.error),
               ),
             ),
             const SizedBox(width: 10),
