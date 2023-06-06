@@ -23,6 +23,9 @@ class FileDownloadScreen extends StatefulWidget {
 class _FileDownloadScreenState extends State<FileDownloadScreen> {
   bool isDownloading = false;
   bool completed = false;
+  double _scale = 1.0;
+  double _previousScale = 1.0;
+
   downloadFile() async {
     var dio = Dio();
     final baseStorage = await getExternalStorageDirectory();
@@ -62,6 +65,12 @@ class _FileDownloadScreenState extends State<FileDownloadScreen> {
     }
   }
 
+  void _zoom() {
+    setState(() {
+      _scale = (_scale == 1.0) ? 2.0 : 1.0;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -73,31 +82,44 @@ class _FileDownloadScreenState extends State<FileDownloadScreen> {
       body: Stack(
         children: [
           Center(
-            child: Image.network(
-              widget.url,
-              width: double.infinity,
-              height: MediaQuery.of(context).size.height / 2.5,
-              fit: BoxFit.cover,
+            child: GestureDetector(
+              onDoubleTap: _zoom,
+              onScaleStart: (ScaleStartDetails details) {
+                _previousScale = _scale;
+              },
+              onScaleUpdate: (ScaleUpdateDetails details) {
+                setState(() {
+                  _scale = _previousScale * details.scale;
+                });
+              },
+              child: InteractiveViewer(
+                minScale: 1.0,
+                maxScale: 5.0,
+                scaleEnabled: true,
+                panEnabled: true,
+                child: Image.network(
+                  widget.url,
+                  width: double.infinity,
+                  height: MediaQuery.of(context).size.height / 2,
+                  fit: BoxFit.cover,
+                ),
+              ),
             ),
           ),
           Positioned(
             bottom: 30,
             left: 50,
             child: isDownloading
-                ? Container(
-                    child: TextComp(
-                      text: "downloading...",
-                      color: AppColors.whiteColor,
-                      fontweight: FontWeight.normal,
-                    ),
+                ? TextComp(
+                    text: "downloading...",
+                    color: AppColors.whiteColor,
+                    fontweight: FontWeight.normal,
                   )
                 : completed
-                    ? Container(
-                        child: TextComp(
-                          text: "saved to gallery",
-                          color: AppColors.whiteColor,
-                          fontweight: FontWeight.normal,
-                        ),
+                    ? TextComp(
+                        text: "saved to gallery",
+                        color: AppColors.whiteColor,
+                        fontweight: FontWeight.normal,
                       )
                     : Container(),
           ),
@@ -118,7 +140,7 @@ class _FileDownloadScreenState extends State<FileDownloadScreen> {
   Widget spiner() => Center(
         child: LoadingAnimationWidget.dotsTriangle(
           color: AppColors.whiteColor,
-          size: 30,
+          size: 25,
         ),
       );
 }

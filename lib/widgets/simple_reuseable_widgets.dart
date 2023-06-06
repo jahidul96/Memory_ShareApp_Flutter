@@ -152,9 +152,9 @@ Widget groupListTile({
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   TextComp(
-                      text: groupInfo.groupName != ""
-                          ? groupInfo.groupName
-                          : "groupname"),
+                      text: groupInfo.groupName.length > 16
+                          ? '${groupInfo.groupName.substring(0, 16)}...'
+                          : groupInfo.groupName),
                   TextComp(
                     text: FirebaseAuth.instance.currentUser!.uid ==
                             groupInfo.adminId
