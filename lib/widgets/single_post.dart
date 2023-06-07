@@ -180,7 +180,7 @@ class _SinglePostCompState extends State<SinglePostComp> {
                         controller: _pageController,
                         count: widget.postData.postImages.length,
                         axisDirection: Axis.horizontal,
-                        effect: const SlideEffect(
+                        effect: SlideEffect(
                             spacing: 8.0,
                             radius: 10,
                             dotWidth: 10.0,
@@ -188,7 +188,7 @@ class _SinglePostCompState extends State<SinglePostComp> {
                             paintStyle: PaintingStyle.stroke,
                             strokeWidth: 1.5,
                             dotColor: Colors.grey,
-                            activeDotColor: Colors.indigo),
+                            activeDotColor: AppColors.appbarColor),
                       ),
                     )
             ],
